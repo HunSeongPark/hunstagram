@@ -12,3 +12,12 @@
 
 ## ERD
 <img width="943" alt="스크린샷 2022-11-08 오후 7 52 49" src="https://user-images.githubusercontent.com/71416677/200546208-d607dbb2-0364-403b-92d7-698b0c7f1376.png">
+
+## 커밋 컨벤션
+- feat: 새로운 기능의 추가
+- fix: 버그 수정
+- docs: 문서 수정
+- style: 스타일 관련 수정 (코드 포맷팅, 세미콜론 누락, 코드 자체의 변경이 없는 경우)
+- refactor: 코드 리팩토링
+- test: 테스트 관련 코드
+- chore: 빌드 관련 수정 (application.yml, build.gradle, .gitignore ..)
