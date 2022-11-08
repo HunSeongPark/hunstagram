@@ -1,6 +1,6 @@
-package com.example.hunstagram.domain.user.controller;
+package com.example.hunstagram.domain.post.controller;
 
-import com.example.hunstagram.domain.user.service.UserService;
+import com.example.hunstagram.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @date : 2022-11-08
  */
 @RequiredArgsConstructor
-@RequestMapping("/v1/users")
+@RequestMapping("/v1/posts")
 @RestController
-public class UserApiController {
+public class PostApiController {
 
-    private final UserService userService;
+    private final PostService postService;
 }
