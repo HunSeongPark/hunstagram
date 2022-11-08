@@ -9,3 +9,6 @@
 - 도메인 연결
 - DTO inner class 처리 등 클린코드에 집중하며 코드 작성
 - etc..
+
+## ERD
+<img width="943" alt="스크린샷 2022-11-08 오후 7 52 49" src="https://user-images.githubusercontent.com/71416677/200546208-d607dbb2-0364-403b-92d7-698b0c7f1376.png">
