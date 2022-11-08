@@ -26,16 +26,17 @@ public class Comment {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
+    @Column(name = "content", nullable = false)
     private String content;
 }
