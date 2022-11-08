@@ -25,10 +25,12 @@ public class Post {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "thumbnail_image", nullable = false)
     private String thumbnailImage;
 
+    @Column(name = "content")
     private String content;
 }
