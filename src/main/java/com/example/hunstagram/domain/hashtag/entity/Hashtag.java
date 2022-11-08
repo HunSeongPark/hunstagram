@@ -25,8 +25,9 @@ public class Hashtag {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Column(name = "hashtag", nullable = false)
     private String hashtag;
 }
