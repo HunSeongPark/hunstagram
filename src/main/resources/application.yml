@@ -1,0 +1,23 @@
+# Local DB
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/hunstagram
+    username: hunseong
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# JPA
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+# Logging level
+logging:
+  level:
+    com:
+      example:
+        hunstagram: debug
