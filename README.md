@@ -22,3 +22,6 @@
 - refactor: 코드 리팩토링
 - test: 테스트 관련 코드
 - chore: 빌드 관련 수정 (application.yml, build.gradle, .gitignore ..)
+
+## 새롭게 알게된 것 
+- Entity Class에 @NoArgsConstructor(access=PROTECTED) 
