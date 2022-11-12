@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum CustomErrorCode {
-    ;
+    /* WRITE ErrorCode HERE! */ ;
+
     private final HttpStatus httpStatus;
     private final String errorMessage;
 }
