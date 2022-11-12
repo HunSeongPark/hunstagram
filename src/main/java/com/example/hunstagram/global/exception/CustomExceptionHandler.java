@@ -17,8 +17,8 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {
-        log.error("url: {}, errorCode: {}, errorMessage: {}",
-                request.getRequestURL(), e.getErrorCode(), e.getErrorMessage());
+        log.error("url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+                request.getRequestURL(), e.getErrorCode(), e.getErrorMessage(), e.getCause());
 
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())
