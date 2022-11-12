@@ -22,22 +22,4 @@ public class UserApiController {
 
     private final UserService userService;
 
-    @GetMapping("/err")
-    public ResponseEntity<String> err() {
-        throw new CustomException(CustomErrorCode.TEST_ERROR);
-    }
-
-    @GetMapping("/err2")
-    public ResponseEntity<String> err2() {
-        try {
-            throw new SQLException("SQL EXCEPTION OCCUR");
-    } catch (SQLException e) {
-            throw new CustomException(CustomErrorCode.TEST_ERROR, e);
-        }
-    }
-
-    @GetMapping("/err3")
-    public ResponseEntity<String> err3() {
-        throw new CustomException(CustomErrorCode.TEST_ERROR, "테스트 에러 코드");
-    }
 }
