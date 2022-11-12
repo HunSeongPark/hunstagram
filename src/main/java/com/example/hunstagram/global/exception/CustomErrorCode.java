@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum CustomErrorCode {
-    /* WRITE ErrorCode HERE! */ ;
-
+    /* WRITE ErrorCode HERE! */
+    TEST_ERROR(HttpStatus.BAD_GATEWAY, "Test Error Message.");
     private final HttpStatus httpStatus;
     private final String errorMessage;
 }
