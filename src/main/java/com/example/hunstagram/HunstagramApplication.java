@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HunstagramApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(HunstagramApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(HunstagramApplication.class, args);
+    }
 
 }

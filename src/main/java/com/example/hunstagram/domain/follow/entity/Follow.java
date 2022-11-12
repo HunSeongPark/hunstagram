@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.follow.entity;
 
+import com.example.hunstagram.domain.BaseTimeEntity;
 import com.example.hunstagram.domain.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Follow {
+public class Follow extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

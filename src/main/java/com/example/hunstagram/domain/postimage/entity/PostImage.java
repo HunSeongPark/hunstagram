@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.postimage.entity;
 
+import com.example.hunstagram.domain.BaseTimeEntity;
 import com.example.hunstagram.domain.post.entity.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,9 @@ import static lombok.AccessLevel.PROTECTED;
  * @date : 2022-11-08
  */
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+//@NoArgsConstructor(access = PROTECTED)
 @Entity
-public class PostImage {
+public class PostImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
