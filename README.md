@@ -11,7 +11,7 @@
 - etc..
 
 ## ERD
-![huns](https://user-images.githubusercontent.com/71416677/201517195-9015ea2a-cf76-47dc-828d-64c774c7fafa.png)
+<img width="1039" alt="image" src="https://user-images.githubusercontent.com/71416677/201517254-9b72c7bc-1cf1-454a-99e9-b0bf190a96cd.png">
 
 
 ## 커밋 컨벤션
