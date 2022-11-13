@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.like.entity;
 
+import com.example.hunstagram.domain.BaseTimeEntity;
 import com.example.hunstagram.domain.comment.entity.Comment;
 import com.example.hunstagram.domain.post.entity.Post;
 import com.example.hunstagram.domain.user.entity.User;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-public class Like {
+public class Like extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
