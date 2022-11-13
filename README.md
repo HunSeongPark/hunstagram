@@ -11,7 +11,8 @@
 - etc..
 
 ## ERD
-<img width="943" alt="스크린샷 2022-11-08 오후 7 52 49" src="https://user-images.githubusercontent.com/71416677/200546208-d607dbb2-0364-403b-92d7-698b0c7f1376.png">
+![huns](https://user-images.githubusercontent.com/71416677/201517195-9015ea2a-cf76-47dc-828d-64c774c7fafa.png)
+
 
 ## 커밋 컨벤션
 - feat: 새로운 기능의 추가
