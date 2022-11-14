@@ -1,9 +1,14 @@
 package com.example.hunstagram.domain.user.service;
 
+import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.UserRepository;
+import com.example.hunstagram.global.exception.CustomErrorCode;
+import com.example.hunstagram.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 
 /**
  * @author : Hunseong-Park
@@ -15,4 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public UserDto.SignUpResponse signup(UserDto.SignUpRequest requestDto) {
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
+            throw new CustomException(EMAIL_ALREADY_EXISTS);
+        }
+        return UserDto.SignUpResponse.fromRequestDto(requestDto);
+    }
 }

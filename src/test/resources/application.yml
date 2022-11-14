@@ -1,0 +1,24 @@
+# Local DB (Test H2)
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+# Logging level
+logging:
+  level:
+    com:
+      example:
+        hunstagram: debug

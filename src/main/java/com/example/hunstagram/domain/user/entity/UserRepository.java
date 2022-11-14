@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date : 2022-11-08
  */
 public interface UserRepository extends JpaRepository<User, Long> {
+    Boolean existsByEmail(String email);
 }

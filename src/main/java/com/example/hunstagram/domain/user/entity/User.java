@@ -1,6 +1,8 @@
 package com.example.hunstagram.domain.user.entity;
 
 import com.example.hunstagram.domain.BaseTimeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +16,10 @@ import static lombok.AccessLevel.PROTECTED;
  * @date : 2022-11-08
  */
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
+@Table(name = "users")
 @Entity
 public class User extends BaseTimeEntity {
 
@@ -24,6 +29,12 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "profile_image")
     private String profileImage;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "nickname", nullable = false)
     private String nickname;
@@ -36,4 +47,6 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
+
 }
