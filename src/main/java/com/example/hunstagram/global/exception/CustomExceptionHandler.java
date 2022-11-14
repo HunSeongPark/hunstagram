@@ -3,13 +3,15 @@ package com.example.hunstagram.global.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
-import static com.example.hunstagram.global.exception.CustomErrorCode.INVALID_REQUEST;
+import java.util.Objects;
+
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 
 /**
  * @author : Hunseong-Park
@@ -44,4 +46,19 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(INVALID_HTTP_METHOD));
     }
 
+    // Validation Exception
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException e,
+            HttpServletRequest request
+    ) {
+        String validationMessage = Objects.requireNonNull(e.getFieldError()).getDefaultMessage();
+        log.error("url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+                request.getRequestURL(), INVALID_VALUE, validationMessage, e);
+
+        CustomException customException = new CustomException(INVALID_VALUE, validationMessage);
+        return ResponseEntity
+                .status(INVALID_VALUE.getHttpStatus())
+                .body(new ErrorResponse(customException));
+    }
 }

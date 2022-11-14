@@ -17,7 +17,8 @@ public enum CustomErrorCode {
     EMAIL_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 이메일입니다."),
 
     // General
-    INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다.");
+    INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다."),
+    INVALID_VALUE(BAD_REQUEST, "잘못된 입력값입니다.");
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
