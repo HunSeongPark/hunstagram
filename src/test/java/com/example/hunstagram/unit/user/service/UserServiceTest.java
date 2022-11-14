@@ -17,7 +17,6 @@ import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALRE
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 
 /**
