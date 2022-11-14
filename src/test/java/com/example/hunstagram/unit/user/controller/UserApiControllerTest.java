@@ -1,5 +1,6 @@
-package com.example.hunstagram.domain.user.controller;
+package com.example.hunstagram.unit.user.controller;
 
+import com.example.hunstagram.domain.user.controller.UserApiController;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
@@ -58,7 +59,7 @@ class UserApiControllerTest {
     @MockBean
     private UserRepository userRepository;
 
-    @DisplayName("[POST] 회원가입1 - id, pw")
+    @DisplayName("회원가입을 위한 email, pw 입력")
     @WithMockUser
     @Test
     void signup() throws Exception {
