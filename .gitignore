@@ -38,3 +38,6 @@ out/
 
 ### insta_image ###
 insta_images
+
+### yml ###
+/src/main/resources/application-aws.yml
