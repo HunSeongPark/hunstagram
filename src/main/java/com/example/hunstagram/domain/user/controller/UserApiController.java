@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * @author : Hunseong-Park
  * @date : 2022-11-08
@@ -21,7 +23,7 @@ public class UserApiController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto.SignUpResponse> signup(@RequestBody UserDto.SignUpRequest requestDto) {
+    public ResponseEntity<UserDto.SignUpResponse> signup(@RequestBody @Valid UserDto.SignUpRequest requestDto) {
         return ResponseEntity.ok(userService.signup(requestDto));
     }
 }
