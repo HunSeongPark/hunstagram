@@ -2,6 +2,7 @@ package com.example.hunstagram.domain.user.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.validation.constraints.Email;
@@ -17,6 +18,7 @@ import static lombok.AccessLevel.*;
 public class UserDto {
 
     @Getter
+    @AllArgsConstructor
     public static class SignUpRequest {
 
         @NotBlank(message = "이메일을 입력해주세요.")
