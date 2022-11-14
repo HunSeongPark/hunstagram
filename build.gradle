@@ -38,12 +38,6 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
-			limit {
-				minimum = 0.80
-			}
-		}
-
-		rule {
 			enabled = true
 
 			// 룰을 체크할 단위는 클래스 단위
@@ -68,13 +62,13 @@ jacocoTestCoverageVerification {
 			}
 
 			excludes = [
-					"**/*Application*",
-					"**/*Config*",
-					"**/*Dto*",
-					"**/*Request*",
-					"**/*Response*",
-					"**/*Exception*",
-					"**/*Error*"
+					"*.*Application*",
+					"*.*Config*",
+					"*.*Dto*",
+					"*.*Request*",
+					"*.*Response*",
+					"*.*Exception*",
+					"*.*Error*"
 			]
 		}
 	}
