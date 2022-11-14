@@ -1,9 +1,7 @@
 package com.example.hunstagram.domain.user.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import com.example.hunstagram.domain.user.entity.User;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -39,6 +37,33 @@ public class UserDto {
 
         public static SignUpResponse fromRequestDto(SignUpRequest requestDto) {
             return new SignUpResponse(requestDto.getEmail(), requestDto.getPassword());
+        }
+    }
+
+    @Builder
+    @AllArgsConstructor(access = PRIVATE)
+    @Getter
+    public static class SignUpInfoRequest {
+        private String email;
+        private String password;
+        private String profileImage;
+        private String name;
+        private String nickname;
+        private String introText;
+
+        public void encodePassword(String encodedPassword) {
+            this.password = encodedPassword;
+        }
+
+        public User toEntity(String profileImage) {
+            return User.builder()
+                    .email(this.email)
+                    .password(this.password)
+                    .profileImage(profileImage)
+                    .name(this.name)
+                    .nickname(this.nickname)
+                    .introText(this.introText)
+                    .build();
         }
     }
 }
