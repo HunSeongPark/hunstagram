@@ -26,4 +26,10 @@ public class UserApiController {
     public ResponseEntity<UserDto.SignUpResponse> signup(@RequestBody @Valid UserDto.SignUpRequest requestDto) {
         return ResponseEntity.ok(userService.signup(requestDto));
     }
+
+    @PostMapping("/signup/info")
+    public ResponseEntity<Void> signupInfo(@RequestBody @Valid UserDto.SignUpInfoRequest requestDto) {
+        userService.signupInfo(requestDto);
+        return ResponseEntity.ok().build();
+    }
 }
