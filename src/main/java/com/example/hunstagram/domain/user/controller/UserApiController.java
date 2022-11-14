@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.user.controller;
 
+import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
