@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
  * @date : 2022-11-08
  */
 @Getter
-//@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Entity
 public class PostImage extends BaseTimeEntity {
 

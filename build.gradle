@@ -20,7 +20,15 @@ jacocoTestReport {
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, // 리포트 결과에 제외시킬 디렉토리
-					exclude: ['**/*Application*'])
+					excludes: [
+							"**/*Application*",
+							"**/*Config*",
+							"**/*Dto*",
+							"**/*Request*",
+							"**/*Response*",
+							"**/*Exception*",
+							"**/*Error*"
+					])
 		}))
 	}
 
@@ -69,7 +77,13 @@ jacocoTestCoverageVerification {
 			}
 
 			excludes = [
-					"'*.Application*'"
+					"**/*Application*",
+					"**/*Config*",
+					"**/*Dto*",
+					"**/*Request*",
+					"**/*Response*",
+					"**/*Exception*",
+					"**/*Error*"
 			]
 		}
 	}
