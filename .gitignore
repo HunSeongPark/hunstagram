@@ -36,8 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
-### insta_image ###
+### image ###
 insta_images
+src/test/resources/img
 
 ### yml ###
 /src/main/resources/application-aws.yml
