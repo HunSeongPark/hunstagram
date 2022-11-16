@@ -28,7 +28,14 @@ jacocoTestReport {
 							"**/*Response*",
 							"**/*Exception*",
 							"**/*Error*",
-							"**/*Aws*"
+							"**/*Aws*",
+							"**/*Filter*",
+							"**/*Handler*",
+							"**/*Provider*",
+							"**/*Type*",
+							"**/*CustomUserDetail*",
+							"**/entity",
+							"**/security"
 					])
 		}))
 	}
@@ -70,7 +77,14 @@ jacocoTestCoverageVerification {
 					"*.*Response*",
 					"*.*Exception*",
 					"*.*Error*",
-					"*.*Aws*"
+					"*.*Aws*",
+					"*.*Filter*",
+					"*.*Handler*",
+					"*.*Provider*",
+					"*.*Type*",
+					"*.*CustomUserDetail*",
+					"*.User",
+					"*.JwtService",
 			]
 		}
 	}
