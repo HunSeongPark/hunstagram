@@ -27,7 +27,8 @@ jacocoTestReport {
 							"**/*Request*",
 							"**/*Response*",
 							"**/*Exception*",
-							"**/*Error*"
+							"**/*Error*",
+							"**/*Aws*"
 					])
 		}))
 	}
@@ -68,7 +69,8 @@ jacocoTestCoverageVerification {
 					"*.*Request*",
 					"*.*Response*",
 					"*.*Exception*",
-					"*.*Error*"
+					"*.*Error*",
+					"*.*Aws*"
 			]
 		}
 	}
