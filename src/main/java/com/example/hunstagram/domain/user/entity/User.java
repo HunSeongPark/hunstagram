@@ -49,4 +49,7 @@ public class User extends BaseTimeEntity {
     private String refreshToken;
 
 
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
