@@ -30,13 +30,15 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final AuthenticationSuccessHandler successHandler;
     private final AuthenticationFailureHandler failureHandler;
-    private final CustomAuthenticationFilter authenticationFilter;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authManagerBuilder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        CustomAuthenticationFilter authenticationFilter
+                = new CustomAuthenticationFilter(authManagerBuilder.getOrBuild());
         // 로그인 인증 필터
         authenticationFilter.setFilterProcessesUrl("/v1/users/login");
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
@@ -52,11 +54,5 @@ public class SecurityConfig {
                 .anyRequest().permitAll();
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-        return auth.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder).and().build();
     }
 }
