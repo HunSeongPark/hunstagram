@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
  * @date : 2022-11-16
  */
 @RequiredArgsConstructor
-@Component
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
