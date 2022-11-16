@@ -1,5 +1,7 @@
 # Local DB
 spring:
+  profiles:
+    include: aws
   datasource:
     url: jdbc:mysql://localhost:3306/hunstagram
     username: hunseong
