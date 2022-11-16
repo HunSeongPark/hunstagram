@@ -1,5 +1,8 @@
 # Local DB (Test H2)
 spring:
+  profiles:
+    include: aws
+    active: test
   datasource:
     url: jdbc:h2:mem:test
     username: sa
