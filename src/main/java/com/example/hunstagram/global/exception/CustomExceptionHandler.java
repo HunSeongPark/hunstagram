@@ -1,5 +1,7 @@
 package com.example.hunstagram.global.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -60,5 +62,25 @@ public class CustomExceptionHandler {
         return ResponseEntity
                 .status(INVALID_VALUE.getHttpStatus())
                 .body(new ErrorResponse(customException));
+    }
+
+    // Expired Refresh Token
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> refreshTokenExpiredException(HttpServletRequest request) {
+        log.error("url: {} | errorCode: {} | errorMessage: {}",
+                request.getRequestURL(), REFRESH_TOKEN_EXPIRED, REFRESH_TOKEN_EXPIRED.getErrorMessage());
+        return ResponseEntity
+                .status(REFRESH_TOKEN_EXPIRED.getHttpStatus())
+                .body(new ErrorResponse(REFRESH_TOKEN_EXPIRED));
+    }
+
+    // 잘못된 Refresh Token
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorResponse> refreshTokenException(HttpServletRequest request) {
+        log.error("url: {} | errorCode: {} | errorMessage: {}",
+                request.getRequestURL(), INVALID_TOKEN, INVALID_TOKEN.getErrorMessage());
+        return ResponseEntity
+                .status(INVALID_TOKEN.getHttpStatus())
+                .body(new ErrorResponse(INVALID_TOKEN));
     }
 }
