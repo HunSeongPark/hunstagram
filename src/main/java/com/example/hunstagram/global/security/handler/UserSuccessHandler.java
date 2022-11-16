@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.example.hunstagram.global.type.RoleType.USER;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @author : Hunseong-Park
@@ -44,6 +45,7 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.createAccessToken(user.getEmail(), USER, user.getId());
         String refreshToken = jwtService.createRefreshToken(user.getEmail());
         user.updateRefreshToken(refreshToken);
+        response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getWriter(), new TokenResponseDto(accessToken, refreshToken));
     }
 
