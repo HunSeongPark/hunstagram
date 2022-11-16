@@ -2,7 +2,7 @@
 인스타그램 API 클론코딩 📷 - API 설계부터 배포 자동화까지
 
 ## Goals
-- (Jacoco) 테스트 커버리지 100%
+- (Jacoco) Domain 관련 Controller, Service 단에 대해 테스트 커버리지 100%
 - 통합테스트, 유닛테스트 작성
 - (Swagger) API 명세 작성
 - (AWS S3) 이미지 저장 및 조회
