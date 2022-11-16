@@ -27,3 +27,5 @@
 
 ## 새롭게 알게된 것 
 - Entity Class에 @NoArgsConstructor(access=PROTECTED) 
+- Mock S3 라이브러리 사용하여 로컬 환경에서 S3 테스트
+- Multipart 테스트 (Controller Unit Test, Service Integration Test)
