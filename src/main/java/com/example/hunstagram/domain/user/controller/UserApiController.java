@@ -5,10 +5,8 @@ import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -29,8 +27,11 @@ public class UserApiController {
     }
 
     @PostMapping("/signup/info")
-    public ResponseEntity<Void> signupInfo(@RequestBody @Valid UserDto.SignUpInfoRequest requestDto) {
-        userService.signupInfo(requestDto);
+    public ResponseEntity<Void> signupInfo(
+            @RequestPart(value = "data") @Valid UserDto.SignUpInfoRequest requestDto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile image
+            ) {
+        userService.signupInfo(requestDto, image);
         return ResponseEntity.ok().build();
     }
 }

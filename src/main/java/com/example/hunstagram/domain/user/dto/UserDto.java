@@ -59,7 +59,7 @@ public class UserDto {
         private String profileImage;
 
         @NotBlank(message = "이름을 입력해주세요.")
-        @Pattern(regexp = "[a-z가-힣1-9]{2,18}",
+        @Pattern(regexp = "[a-zA-Z가-힣1-9]{2,18}",
                 message = "이름은 영어, 한글, 숫자로 구성된 2~18자로 입력해주세요.")
         private String name;
 
