@@ -6,6 +6,7 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
 import com.example.hunstagram.global.security.SecurityConfig;
+import com.example.hunstagram.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,18 +16,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +55,9 @@ class UserApiControllerTest {
 
     @MockBean
     private AwsS3Service awsS3Service;
+
+    @MockBean
+    private JwtService jwtService;
 
     @MockBean
     private UserRepository userRepository;
@@ -107,6 +112,49 @@ class UserApiControllerTest {
                         .file(bodyFile)
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("refresh token을 통해 access(refresh) token 재발급에 성공한다")
+    @WithMockUser
+    @Test
+    void refresh() throws Exception {
+        // given
+        String token = "Bearer test123";
+        given(userService.refresh(any())).willReturn(new HashMap<>());
+
+        // when & then
+        mvc.perform(get("/v1/users/refresh")
+                .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("token 재발급 시 token이 존재하지 않으면 실패한다")
+    @WithMockUser
+    @Test
+    void refresh_token_not_found_fail() throws Exception {
+        // given
+        given(userService.refresh(any())).willReturn(new HashMap<>());
+
+        // when & then
+        mvc.perform(get("/v1/users/refresh"))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @DisplayName("token 재발급 시 token prefix가 Bearer가 아니면 실패한다")
+    @WithMockUser
+    @Test
+    void refresh_token_prefix_fail() throws Exception {
+        // given
+        String token = "test123";
+        given(userService.refresh(any())).willReturn(new HashMap<>());
+
+        // when & then
+        mvc.perform(get("/v1/users/refresh")
+                        .header("Authorization", token))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 }
