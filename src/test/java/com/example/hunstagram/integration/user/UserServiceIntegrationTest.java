@@ -1,11 +1,13 @@
 package com.example.hunstagram.integration.user;
 
+import com.auth0.jwt.JWT;
 import com.example.hunstagram.config.AwsS3MockConfig;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.exception.CustomException;
+import com.example.hunstagram.global.security.service.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,16 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
+import javax.persistence.EntityManager;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.Map;
 
+import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
 import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.example.hunstagram.global.exception.CustomErrorCode.INVALID_TOKEN;
+import static com.example.hunstagram.global.security.service.JwtService.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,7 +44,13 @@ public class UserServiceIntegrationTest {
     UserService userService;
 
     @Autowired
+    JwtService jwtService;
+
+    @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    EntityManager em;
 
     @DisplayName("회원가입을 위한 email, pw 입력에 성공한다")
     @Test
@@ -132,5 +144,134 @@ public class UserServiceIntegrationTest {
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getProfileImage()).isNotNull();
         System.out.println(user.getProfileImage());
+    }
+
+    @DisplayName("refresh token을 통해 access(refresh) token 재발급에 성공한다")
+    @Test
+    void refresh_success() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+
+        String refreshToken = jwtService.createRefreshToken(email);
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        user.updateRefreshToken(refreshToken);
+        em.flush();
+        em.clear();
+
+        // when
+        Map<String, String> result = userService.refresh(refreshToken);
+
+        // then
+        assertThat(result.get("accessToken")).isNotNull().isNotEmpty();
+    }
+
+    @DisplayName("token 재발급 시 db 내 refresh token과 일치하지 않으면 실패한다")
+    @Test
+    void refresh_db_not_matched_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+
+        userService.signupInfo(requestDto, null);
+
+        String refreshToken = jwtService.createRefreshToken(email);
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        user.updateRefreshToken(refreshToken + "dummy");
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> userService.refresh(refreshToken));
+        assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
+    }
+
+    @DisplayName("token 재발급 시 refresh token 만료기간이 1개월 미만이면 refresh token도 재발급한다")
+    @Test
+    void refresh_token_issue_success() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+
+        // ** 만료일을 25일 (< 1개월) 로 설정
+        String refreshToken = JWT.create()
+                .withSubject(email)
+                .withExpiresAt(new Date(System.currentTimeMillis() + (DAY * 25)))
+                .sign(HMAC256(JWT_SECRET));
+
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        user.updateRefreshToken(refreshToken);
+        em.flush();
+        em.clear();
+
+        // when
+        Map<String, String> result = userService.refresh(refreshToken);
+
+        // then
+        assertThat(result.get("accessToken")).isNotNull().isNotEmpty();
+        assertThat(result.get("refreshToken")).isNotNull().isNotEmpty();
+    }
+
+    @DisplayName("token 재발급 시 refresh token에 해당하는 user가 없으면 실패한다")
+    @Test
+    void refresh_token_user_not_found_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+
+        // ** refresh Token에 해당하는 이메일을 유효하지 않도록 설정
+        String refreshToken = JWT.create()
+                .withSubject(email + "dummy")
+                .withExpiresAt(new Date(System.currentTimeMillis() + RT_EXP_TIME))
+                .sign(HMAC256(JWT_SECRET));
+
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        user.updateRefreshToken(refreshToken);
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> userService.refresh(refreshToken));
+        assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
     }
 }
