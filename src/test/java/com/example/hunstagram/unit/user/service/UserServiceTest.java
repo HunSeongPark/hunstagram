@@ -3,6 +3,7 @@ package com.example.hunstagram.unit.user.service;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
+import com.example.hunstagram.global.aws.service.AwsS3Service;
 import com.example.hunstagram.global.exception.CustomErrorCode;
 import com.example.hunstagram.global.exception.CustomException;
 import org.assertj.core.api.Assertions;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.example.hunstagram.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXISTS;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +34,12 @@ class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    AwsS3Service awsS3Service;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @DisplayName("회원가입을 위한 email, pw 입력에 성공한다")
     @Test
@@ -67,4 +76,48 @@ class UserServiceTest {
         assertThat(e.getErrorCode()).isEqualTo(EMAIL_ALREADY_EXISTS);
     }
 
+    @DisplayName("회원가입을 위한 정보 입력에 성공한다")
+    @Test
+    void signup_info_success() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        given(userRepository.existsByNickname(any()))
+                .willReturn(false);
+
+        // when & then
+        userService.signupInfo(requestDto, null);
+    }
+
+    @DisplayName("회원가입을 위한 정보 입력 시 닉네임 중복일 경우 실패한다")
+    @Test
+    void signup_email_pw_duplicate_nickname_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        given(userRepository.existsByNickname(any()))
+                .willReturn(true);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> userService.signupInfo(requestDto, null));
+        assertThat(e.getErrorCode()).isEqualTo(NICKNAME_ALREADY_EXISTS);
+    }
 }
