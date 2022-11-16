@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
+    @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -41,6 +43,7 @@ public class UserSuccessHandler implements AuthenticationSuccessHandler {
         // accessToken , refreshToken 생성
         String accessToken = jwtService.createAccessToken(user.getEmail(), USER, user.getId());
         String refreshToken = jwtService.createRefreshToken(user.getEmail());
+        user.updateRefreshToken(refreshToken);
         new ObjectMapper().writeValue(response.getWriter(), new TokenResponseDto(accessToken, refreshToken));
     }
 
