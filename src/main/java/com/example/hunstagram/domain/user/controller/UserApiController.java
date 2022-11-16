@@ -3,12 +3,21 @@ package com.example.hunstagram.domain.user.controller;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
+import com.example.hunstagram.global.exception.CustomErrorCode;
+import com.example.hunstagram.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
+import static com.example.hunstagram.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author : Hunseong-Park
@@ -30,8 +39,18 @@ public class UserApiController {
     public ResponseEntity<Void> signupInfo(
             @RequestPart(value = "data") @Valid UserDto.SignUpInfoRequest requestDto,
             @RequestPart(value = "profileImage", required = false) MultipartFile image
-            ) {
+    ) {
         userService.signupInfo(requestDto, image);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
+            throw new CustomException(TOKEN_NOT_FOUND);
+        }
+        String refreshToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
+        return ResponseEntity.ok(userService.refresh(refreshToken));
     }
 }
