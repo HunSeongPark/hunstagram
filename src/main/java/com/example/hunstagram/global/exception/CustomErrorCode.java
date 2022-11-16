@@ -17,6 +17,9 @@ public enum CustomErrorCode {
     EMAIL_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 이메일입니다."),
     NICKNAME_ALREADY_EXISTS(BAD_REQUEST, "이미 존재하는 닉네임입니다."),
 
+    // JWT
+    TOKEN_NOT_FOUND(BAD_REQUEST, "JWT Token이 존재하지 않습니다."),
+
     // AWS
     IMAGE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
 
