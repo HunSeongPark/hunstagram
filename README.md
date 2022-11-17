@@ -9,6 +9,7 @@
 - (Jenkins, Docker, AWC EC2) Docker 사용 컨테이너 배포 및 CI/CD
 - 도메인 연결
 - DTO inner class 처리 등 클린코드에 집중하며 코드 작성
+- 불필요한 Lombok Annotation 사용 X 필수적인 Annotation만 사용!
 - etc..
 
 ## ERD
