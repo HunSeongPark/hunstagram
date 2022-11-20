@@ -59,4 +59,9 @@ public class UserApiController {
         userService.logout();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<Void> test() {
+        return ResponseEntity.ok().build();
+    }
 }

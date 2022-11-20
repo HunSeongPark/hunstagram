@@ -43,8 +43,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return !(
                 // TODO 인증 필요 엔드포인트 추가
-                pathMatcher.match("/v1/users/logout", path)
-                );
+                pathMatcher.match("/v1/users/logout", path) ||
+                        pathMatcher.match("/v1/users/test", path)
+        );
     }
 
     @Override
