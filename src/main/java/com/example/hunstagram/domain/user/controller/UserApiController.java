@@ -53,4 +53,10 @@ public class UserApiController {
         String refreshToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
         return ResponseEntity.ok(userService.refresh(refreshToken));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        userService.logout();
+        return ResponseEntity.ok().build();
+    }
 }
