@@ -74,7 +74,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(INVALID_TOKEN));
 
-        if (!user.getRefreshToken().equals(refreshToken)) {
+        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken)) {
             throw new CustomException(INVALID_TOKEN);
         }
 
@@ -93,5 +93,12 @@ public class UserService {
 
         result.put(AT_HEADER, accessToken);
         return result;
+    }
+
+    public void logout() {
+        String email = jwtService.getEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(INVALID_TOKEN));
+        user.deleteRefreshToken();
     }
 }

@@ -8,19 +8,26 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.exception.CustomException;
 import com.example.hunstagram.global.security.service.JwtService;
+import com.example.hunstagram.global.type.RoleType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
@@ -272,6 +279,111 @@ public class UserServiceIntegrationTest {
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> userService.refresh(refreshToken));
+        assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
+    }
+
+    @DisplayName("token 재발급 시 user table 내 refresh token이 없으면 실패한다")
+    @Test
+    void refresh_user_token_not_found_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+
+        // User Table에 Refresh Token 저장 X
+
+        String refreshToken = JWT.create()
+                .withSubject(email)
+                .withExpiresAt(new Date(System.currentTimeMillis() + RT_EXP_TIME))
+                .sign(HMAC256(JWT_SECRET));
+
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> userService.refresh(refreshToken));
+        assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
+    }
+
+    @DisplayName("logout에 성공한다")
+    @Test
+    void logout_success() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        System.out.println("user Id = " + user.getId());
+        String accessToken = jwtService.createAccessToken(email, RoleType.USER, user.getId());
+        String refreshToken = jwtService.createRefreshToken(email);
+        user.updateRefreshToken(refreshToken);
+        em.flush();
+        em.clear();
+
+        // SecurityContextHolder에 accessToken 포함하여 저장
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when
+        userService.logout();
+
+        // then
+        User findUser = userRepository.findByEmail(email).get();
+        assertThat(findUser.getRefreshToken()).isNull();
+    }
+
+    @DisplayName("logout 시 access token 내 email 정보가 올바르지 않을 시 실패한다")
+    @Test
+    void logout_invalid_email_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        System.out.println("user Id = " + user.getId());
+        // ** 잘못된 email이 들어간 access Token
+        String accessToken = jwtService.createAccessToken(email + "dummy", RoleType.USER, user.getId());
+        String refreshToken = jwtService.createRefreshToken(email);
+        user.updateRefreshToken(refreshToken);
+        em.flush();
+        em.clear();
+
+        // SecurityContextHolder에 accessToken 포함하여 저장
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> userService.logout());
         assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
     }
 }

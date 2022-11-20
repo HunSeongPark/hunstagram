@@ -6,6 +6,7 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
 import com.example.hunstagram.global.security.SecurityConfig;
+import com.example.hunstagram.global.security.filter.CustomAuthorizationFilter;
 import com.example.hunstagram.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(controllers = UserApiController.class,
         excludeFilters = {
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
         })
 class UserApiControllerTest {
 
@@ -156,5 +157,15 @@ class UserApiControllerTest {
                         .header("Authorization", token))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
+    }
+
+    @DisplayName("logout에 성공한다")
+    @WithMockUser
+    @Test
+    void logout() throws Exception {
+        // given & when & then
+        mvc.perform(post("/v1/users/logout")
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk());
     }
 }

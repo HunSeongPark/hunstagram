@@ -22,6 +22,7 @@ public enum CustomErrorCode {
     TOKEN_NOT_FOUND(BAD_REQUEST, "JWT Token이 존재하지 않습니다."),
     INVALID_TOKEN(BAD_REQUEST, "유효하지 않은 JWT Token 입니다."),
     REFRESH_TOKEN_EXPIRED(BAD_REQUEST, "만료된 Refresh Token 입니다."),
+    ACCESS_TOKEN_EXPIRED(BAD_REQUEST, "만료된 Access Token 입니다."),
 
     // AWS
     IMAGE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
