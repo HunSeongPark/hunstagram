@@ -282,6 +282,39 @@ public class UserServiceIntegrationTest {
         assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
     }
 
+    @DisplayName("token 재발급 시 user table 내 refresh token이 없으면 실패한다")
+    @Test
+    void refresh_user_token_not_found_fail() {
+
+        // given
+        String email = "gnstjd0831@naver.com";
+        String password = "test123456!";
+        String name = "hunseong";
+        String nickname = "bba_koon";
+        UserDto.SignUpInfoRequest requestDto = UserDto.SignUpInfoRequest.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .nickname(nickname)
+                .build();
+        userService.signupInfo(requestDto, null);
+
+        // User Table에 Refresh Token 저장 X
+
+        String refreshToken = JWT.create()
+                .withSubject(email)
+                .withExpiresAt(new Date(System.currentTimeMillis() + RT_EXP_TIME))
+                .sign(HMAC256(JWT_SECRET));
+
+        User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> userService.refresh(refreshToken));
+        assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
+    }
+
     @DisplayName("logout에 성공한다")
     @Test
     void logout_success() {
