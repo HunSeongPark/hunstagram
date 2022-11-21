@@ -1,6 +1,7 @@
 package com.example.hunstagram.domain.follow.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author : Hunseong-Park
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
  */
 public class FollowDto {
 
+    @Getter
     @AllArgsConstructor
     public static class Response {
         // true 시 팔로우 추가, false 시 팔로우 취소
