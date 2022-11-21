@@ -8,7 +8,6 @@ import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.global.exception.CustomException;
 import com.example.hunstagram.global.security.service.JwtService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -43,25 +42,31 @@ public class FollowServiceTest {
     @Mock
     UserRepository userRepository;
 
-    @DisplayName("follow 추가에 성공한다")
-    @Test
-    void follow_add_success() {
-
-        // given
-        User fromUser = User.builder()
+    private User createFromUser() {
+        return User.builder()
                 .email("test1@test.com")
                 .name("test1")
                 .nickname("test1")
                 .id(1L)
                 .build();
+    }
 
-        User toUser = User.builder()
+    private User createToUser() {
+        return User.builder()
                 .email("test2@test.com")
                 .name("test2")
                 .nickname("test2")
                 .id(2L)
                 .build();
+    }
 
+    @DisplayName("follow 추가에 성공한다")
+    @Test
+    void follow_add_success() {
+
+        // given
+        User fromUser = createFromUser();
+        User toUser = createToUser();
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.of(fromUser));
@@ -79,20 +84,8 @@ public class FollowServiceTest {
     void follow_add_from_user_not_found_fail() {
 
         // given
-        User fromUser = User.builder()
-                .email("test1@test.com")
-                .name("test1")
-                .nickname("test1")
-                .id(1L)
-                .build();
-
-        User toUser = User.builder()
-                .email("test2@test.com")
-                .name("test2")
-                .nickname("test2")
-                .id(2L)
-                .build();
-
+        User fromUser = createFromUser();
+        User toUser = createToUser();
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.empty());
@@ -107,20 +100,8 @@ public class FollowServiceTest {
     void follow_add_to_user_not_found_fail() {
 
         // given
-        User fromUser = User.builder()
-                .email("test1@test.com")
-                .name("test1")
-                .nickname("test1")
-                .id(1L)
-                .build();
-
-        User toUser = User.builder()
-                .email("test2@test.com")
-                .name("test2")
-                .nickname("test2")
-                .id(2L)
-                .build();
-
+        User fromUser = createFromUser();
+        User toUser = createToUser();
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.of(fromUser));
@@ -136,25 +117,12 @@ public class FollowServiceTest {
     void follow_cancel_success() {
 
         // given
-        User fromUser = User.builder()
-                .email("test1@test.com")
-                .name("test1")
-                .nickname("test1")
-                .id(1L)
-                .build();
-
-        User toUser = User.builder()
-                .email("test2@test.com")
-                .name("test2")
-                .nickname("test2")
-                .id(2L)
-                .build();
-
+        User fromUser = createFromUser();
+        User toUser = createToUser();
         Follow follow = Follow.builder()
                 .fromUser(fromUser)
                 .toUser(toUser)
                 .build();
-
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.of(follow));
 
