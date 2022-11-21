@@ -54,7 +54,6 @@ public class FollowServiceIntegrationTest {
                 .password("test1111!")
                 .name("test1")
                 .nickname("test1")
-                .id(1L)
                 .build();
     }
 
@@ -64,7 +63,6 @@ public class FollowServiceIntegrationTest {
                 .password("test2222!")
                 .name("test2")
                 .nickname("test2")
-                .id(2L)
                 .build();
     }
 
@@ -110,7 +108,7 @@ public class FollowServiceIntegrationTest {
         // SecurityContextHolder에 accessToken 포함하여 저장
         List<SimpleGrantedAuthority> authorities
                 = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, fromUser.getId());
+        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, 1L);
         Authentication authToken = new UsernamePasswordAuthenticationToken(fromUser.getEmail(), accessToken, authorities);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
