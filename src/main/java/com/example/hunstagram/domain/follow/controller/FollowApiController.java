@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.follow.controller;
 
+import com.example.hunstagram.domain.follow.dto.FollowDto;
 import com.example.hunstagram.domain.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class FollowApiController {
 
     private final FollowService followService;
 
-    @PostMapping("/{followerId}")
-    public ResponseEntity<FollowDto.Response> follow(@PathVariable Long followerId) {
-        return ResponseEntity.ok(followService.follow(followerId));
+    @PostMapping("/{toUserId}")
+    public ResponseEntity<FollowDto.Response> follow(@PathVariable Long toUserId) {
+        return ResponseEntity.ok(followService.follow(toUserId));
     }
 }

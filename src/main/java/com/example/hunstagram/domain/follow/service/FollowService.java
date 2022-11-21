@@ -1,9 +1,17 @@
 package com.example.hunstagram.domain.follow.service;
 
+import com.example.hunstagram.domain.follow.dto.FollowDto;
+import com.example.hunstagram.domain.follow.entity.Follow;
 import com.example.hunstagram.domain.follow.entity.FollowRepository;
+import com.example.hunstagram.domain.user.entity.User;
+import com.example.hunstagram.domain.user.entity.UserRepository;
+import com.example.hunstagram.global.exception.CustomException;
+import com.example.hunstagram.global.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
 
 /**
  * @author : Hunseong-Park
@@ -14,5 +22,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FollowService {
 
+    private final JwtService jwtService;
     private final FollowRepository followRepository;
+    private final UserRepository userRepository;
+
+    public FollowDto.Response follow(Long toUserId) {
+        Long fromUserId = jwtService.getId();
+        Follow follow = followRepository.findByFromAndToUserId(fromUserId, toUserId)
+                .orElse(null);
+
+        // 팔로우 추가
+        if (follow == null) {
+            User fromUser = userRepository.findById(fromUserId)
+                    .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+            User toUser = userRepository.findById(toUserId)
+                    .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+            follow = Follow.builder()
+                    .fromUser(fromUser)
+                    .toUser(toUser)
+                    .build();
+            followRepository.save(follow);
+            return new FollowDto.Response(true);
+        } else {
+            // 팔로우 취소
+            followRepository.delete(follow);
+            return new FollowDto.Response(false);
+        }
+    }
 }
