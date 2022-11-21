@@ -1,14 +1,10 @@
 package com.example.hunstagram.unit.user.service;
 
 import com.example.hunstagram.domain.user.dto.UserDto;
-import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
-import com.example.hunstagram.global.exception.CustomErrorCode;
 import com.example.hunstagram.global.exception.CustomException;
-import com.example.hunstagram.global.security.service.JwtService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.example.hunstagram.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXISTS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -45,14 +42,14 @@ class UserServiceTest {
     @DisplayName("회원가입을 위한 email, pw 입력에 성공한다")
     @Test
     void signup_email_pw_success() {
-        
+
         // given
         String email = "gnstjd0831@naver.com";
         String password = "test123456!";
         UserDto.SignUpRequest requestDto = new UserDto.SignUpRequest(email, password);
         given(userRepository.existsByEmail(any()))
                 .willReturn(false);
-        
+
         // when
         UserDto.SignUpResponse responseDto = userService.signup(requestDto);
 

@@ -6,7 +6,6 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.domain.user.service.UserService;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
 import com.example.hunstagram.global.security.SecurityConfig;
-import com.example.hunstagram.global.security.filter.CustomAuthorizationFilter;
 import com.example.hunstagram.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -27,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -126,7 +124,7 @@ class UserApiControllerTest {
 
         // when & then
         mvc.perform(get("/v1/users/refresh")
-                .header("Authorization", token))
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -165,7 +163,7 @@ class UserApiControllerTest {
     void logout() throws Exception {
         // given & when & then
         mvc.perform(post("/v1/users/logout")
-                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
     }
 }
