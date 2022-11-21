@@ -340,7 +340,8 @@ public class UserServiceIntegrationTest {
         em.clear();
 
         // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
         Authentication authToken = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -378,7 +379,8 @@ public class UserServiceIntegrationTest {
         em.clear();
 
         // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
         Authentication authToken = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
