@@ -208,6 +208,29 @@ public class FollowServiceIntegrationTest {
         assertThat(result.getContent().get(2).getNickname()).isEqualTo(fromUser3.getNickname());
     }
 
+    @DisplayName("followee 목록 조회 시, 사용자가 존재하지 않으면 실패한다")
+    @Test
+    void followee_list_user_not_found_fail() {
+
+        // given
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
+        userRepository.save(fromUser);
+        userRepository.save(toUser);
+
+        Follow follow = Follow.builder()
+                .fromUser(fromUser)
+                .toUser(toUser)
+                .build();
+        followRepository.save(follow);
+
+        // when & then
+        // * 유효하지 않은 userId로 followee 조회 시 에러
+        CustomException e = assertThrows(CustomException.class,
+                () -> followService.getFolloweeList(PageRequest.of(0, 10), 3L));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
+    }
+
     @DisplayName("following 목록 조회에 성공한다")
     @Test
     void following_list_success() {
@@ -247,5 +270,28 @@ public class FollowServiceIntegrationTest {
         assertThat(result.getContent().get(0).getNickname()).isEqualTo(toUser1.getNickname());
         assertThat(result.getContent().get(1).getNickname()).isEqualTo(toUser2.getNickname());
         assertThat(result.getContent().get(2).getNickname()).isEqualTo(toUser3.getNickname());
+    }
+
+    @DisplayName("following 목록 조회 시, 사용자가 존재하지 않으면 실패한다")
+    @Test
+    void following_list_user_not_found_fail() {
+
+        // given
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
+        userRepository.save(fromUser);
+        userRepository.save(toUser);
+
+        Follow follow = Follow.builder()
+                .fromUser(fromUser)
+                .toUser(toUser)
+                .build();
+        followRepository.save(follow);
+
+        // when & then
+        // * 유효하지 않은 userId로 following 조회 시 에러
+        CustomException e = assertThrows(CustomException.class,
+                () -> followService.getFollowingList(PageRequest.of(0, 10), 3L));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 }
