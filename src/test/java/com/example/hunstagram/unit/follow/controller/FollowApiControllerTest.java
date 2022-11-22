@@ -65,21 +65,12 @@ public class FollowApiControllerTest {
     @MockBean
     private UserRepository userRepository;
 
-    private User createFromUser() {
+    private User createUser(Long id) {
         return User.builder()
-                .email("test1@test.com")
-                .name("test1")
-                .nickname("test1")
-                .id(1L)
-                .build();
-    }
-
-    private User createToUser() {
-        return User.builder()
-                .email("test2@test.com")
-                .name("test2")
-                .nickname("test2")
-                .id(2L)
+                .email("test" + id + "@test.com")
+                .password("test123!" + id)
+                .name("test" + id)
+                .nickname("test" + id)
                 .build();
     }
 
@@ -119,11 +110,11 @@ public class FollowApiControllerTest {
     void followee_list() throws Exception {
 
         // given
-        User toUser = createToUser();
-        User fromUser = createFromUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         Follow follow = Follow.builder()
-                .toUser(toUser)
                 .fromUser(fromUser)
+                .toUser(toUser)
                 .build();
 
         List<FollowListResponse> followList = List.of(FollowListResponse.fromEntity(follow.getToUser()));
@@ -143,11 +134,11 @@ public class FollowApiControllerTest {
     void following_list() throws Exception {
 
         // given
-        User toUser = createToUser();
-        User fromUser = createFromUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         Follow follow = Follow.builder()
-                .toUser(toUser)
                 .fromUser(fromUser)
+                .toUser(toUser)
                 .build();
 
         List<FollowListResponse> followList = List.of(FollowListResponse.fromEntity(follow.getToUser()));
