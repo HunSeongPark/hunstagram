@@ -30,4 +30,11 @@ public class FollowApiController {
     ) {
         return ResponseEntity.ok(followService.getFolloweeList(pageable, userId));
     }
+
+    @GetMapping("/following/{userId}")
+    public ResponseEntity<Page<FollowDto.FollowListResponse>> getFollowingList(
+            Pageable pageable, @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(followService.getFollowingList(pageable, userId));
+    }
 }
