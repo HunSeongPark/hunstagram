@@ -11,7 +11,7 @@ public class FollowDto {
 
     @Getter
     @AllArgsConstructor
-    public static class Response {
+    public static class FollowResponse {
         // true 시 팔로우 추가, false 시 팔로우 취소
         private Boolean isFollowAdd;
     }

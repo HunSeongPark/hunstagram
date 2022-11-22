@@ -62,7 +62,7 @@ public class FollowApiControllerTest {
     void follow_add() throws Exception {
 
         // given
-        given(followService.follow(any())).willReturn(new FollowDto.Response(true));
+        given(followService.follow(any())).willReturn(new FollowDto.FollowResponse(true));
 
         // when & then
         mvc.perform(post("/v1/follow/2").with(SecurityMockMvcRequestPostProcessors.csrf()))
@@ -77,7 +77,7 @@ public class FollowApiControllerTest {
     void follow_cancel() throws Exception {
 
         // given
-        given(followService.follow(any())).willReturn(new FollowDto.Response(false));
+        given(followService.follow(any())).willReturn(new FollowDto.FollowResponse(false));
 
         // when & then
         mvc.perform(post("/v1/follow/2").with(SecurityMockMvcRequestPostProcessors.csrf()))

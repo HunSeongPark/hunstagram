@@ -84,11 +84,11 @@ public class FollowServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // when
-        FollowDto.Response response = followService.follow(toUser.getId());
+        FollowDto.FollowResponse followResponse = followService.follow(toUser.getId());
         Follow follow = followRepository.findByFromAndToUserId(fromUser.getId(), toUser.getId()).orElse(null);
 
         // then
-        assertThat(response.getIsFollowAdd()).isTrue();
+        assertThat(followResponse.getIsFollowAdd()).isTrue();
         assertThat(follow).isNotNull();
         assertThat(follow.getFromUser().getId()).isEqualTo(fromUser.getId());
         assertThat(follow.getToUser().getId()).isEqualTo(toUser.getId());
@@ -164,11 +164,11 @@ public class FollowServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // when
-        FollowDto.Response response = followService.follow(toUser.getId());
+        FollowDto.FollowResponse followResponse = followService.follow(toUser.getId());
         Follow follow = followRepository.findByFromAndToUserId(fromUser.getId(), toUser.getId()).orElse(null);
 
         // then
-        assertThat(response.getIsFollowAdd()).isFalse();
+        assertThat(followResponse.getIsFollowAdd()).isFalse();
         assertThat(follow).isNull();
     }
 }
