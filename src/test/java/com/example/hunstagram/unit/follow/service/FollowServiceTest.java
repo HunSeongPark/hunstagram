@@ -42,21 +42,12 @@ public class FollowServiceTest {
     @Mock
     UserRepository userRepository;
 
-    private User createFromUser() {
+    private User createUser(Long id) {
         return User.builder()
-                .email("test1@test.com")
-                .name("test1")
-                .nickname("test1")
-                .id(1L)
-                .build();
-    }
-
-    private User createToUser() {
-        return User.builder()
-                .email("test2@test.com")
-                .name("test2")
-                .nickname("test2")
-                .id(2L)
+                .email("test" + id + "@test.com")
+                .password("test123!" + id)
+                .name("test" + id)
+                .nickname("test" + id)
                 .build();
     }
 
@@ -65,8 +56,8 @@ public class FollowServiceTest {
     void follow_add_success() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.of(fromUser));
@@ -84,8 +75,8 @@ public class FollowServiceTest {
     void follow_add_from_user_not_found_fail() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.empty());
@@ -100,8 +91,8 @@ public class FollowServiceTest {
     void follow_add_to_user_not_found_fail() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         given(jwtService.getId()).willReturn(1L);
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.empty());
         given(userRepository.findById(1L)).willReturn(Optional.of(fromUser));
@@ -117,8 +108,8 @@ public class FollowServiceTest {
     void follow_cancel_success() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         Follow follow = Follow.builder()
                 .fromUser(fromUser)
                 .toUser(toUser)
