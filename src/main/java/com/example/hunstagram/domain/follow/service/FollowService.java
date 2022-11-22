@@ -26,7 +26,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
-    public FollowDto.Response follow(Long toUserId) {
+    public FollowDto.FollowResponse follow(Long toUserId) {
         Long fromUserId = jwtService.getId();
         Follow follow = followRepository.findByFromAndToUserId(fromUserId, toUserId)
                 .orElse(null);
@@ -43,11 +43,11 @@ public class FollowService {
                     .toUser(toUser)
                     .build();
             followRepository.save(follow);
-            return new FollowDto.Response(true);
+            return new FollowDto.FollowResponse(true);
         } else {
             // 팔로우 취소
             followRepository.delete(follow);
-            return new FollowDto.Response(false);
+            return new FollowDto.FollowResponse(false);
         }
     }
 }
