@@ -55,12 +55,20 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public Page<FollowDto.FollowListResponse> getFolloweeList(Pageable pageable, Long userId) {
+        validateUserExists(userId);
         return followRepository.findFolloweeList(pageable, userId)
                 .map(f -> FollowDto.FollowListResponse.fromEntity(f.getFromUser()));
     }
 
     public Page<FollowDto.FollowListResponse> getFollowingList(Pageable pageable, Long userId) {
+        validateUserExists(userId);
         return followRepository.findFollowingList(pageable, userId)
                 .map(f -> FollowDto.FollowListResponse.fromEntity(f.getToUser()));
+    }
+
+    private void validateUserExists(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new CustomException(USER_NOT_FOUND);
+        }
     }
 }
