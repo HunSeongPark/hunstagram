@@ -16,7 +16,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -42,9 +41,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return !(
-                // TODO 인증 필요 엔드포인트 추가
                 pathMatcher.match("/v1/users/logout", path) ||
-                        pathMatcher.match("/v1/follow/**", path)
+                        pathMatcher.match("/v1/follow/{toUserId:\\d+}", path)
         );
     }
 
