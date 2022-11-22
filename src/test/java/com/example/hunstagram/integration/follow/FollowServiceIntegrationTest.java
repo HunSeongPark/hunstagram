@@ -13,6 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +28,7 @@ import java.util.List;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -48,21 +52,12 @@ public class FollowServiceIntegrationTest {
     @Autowired
     UserRepository userRepository;
 
-    private User createFromUser() {
+    private User createUser(Long id) {
         return User.builder()
-                .email("test1@test.com")
-                .password("test1111!")
-                .name("test1")
-                .nickname("test1")
-                .build();
-    }
-
-    private User createToUser() {
-        return User.builder()
-                .email("test2@test.com")
-                .password("test2222!")
-                .name("test2")
-                .nickname("test2")
+                .email("test" + id + "@test.com")
+                .password("test123!" + id)
+                .name("test" + id)
+                .nickname("test" + id)
                 .build();
     }
 
@@ -71,8 +66,8 @@ public class FollowServiceIntegrationTest {
     void follow_add_success() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         userRepository.save(fromUser);
         userRepository.save(toUser);
 
@@ -99,8 +94,8 @@ public class FollowServiceIntegrationTest {
     void follow_add_from_user_not_found_fail() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
 
         // ! fromUser 테이블에 저장 X
         userRepository.save(toUser);
@@ -122,8 +117,8 @@ public class FollowServiceIntegrationTest {
     void follow_add_to_user_not_found_fail() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
 
         userRepository.save(fromUser);
         // ! toUser 테이블에 저장 X
@@ -145,8 +140,8 @@ public class FollowServiceIntegrationTest {
     void follow_cancel_success() {
 
         // given
-        User fromUser = createFromUser();
-        User toUser = createToUser();
+        User fromUser = createUser(1L);
+        User toUser = createUser(2L);
         userRepository.save(fromUser);
         userRepository.save(toUser);
 
@@ -170,5 +165,87 @@ public class FollowServiceIntegrationTest {
         // then
         assertThat(followResponse.getIsFollowAdd()).isFalse();
         assertThat(follow).isNull();
+    }
+
+    @DisplayName("followee 목록 조회에 성공한다")
+    @Test
+    void followee_list_success() {
+
+        // given
+        User fromUser1 = createUser(1L);
+        User fromUser2 = createUser(2L);
+        User fromUser3 = createUser(3L);
+        User toUser = createUser(4L);
+        userRepository.save(fromUser1);
+        userRepository.save(fromUser2);
+        userRepository.save(fromUser3);
+        userRepository.save(toUser);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(fromUser1)
+                .toUser(toUser)
+                .build();
+        Follow follow2 = Follow.builder()
+                .fromUser(fromUser2)
+                .toUser(toUser)
+                .build();
+        Follow follow3 = Follow.builder()
+                .fromUser(fromUser3)
+                .toUser(toUser)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+        followRepository.save(follow3);
+
+        // when
+        Page<FollowDto.FollowListResponse> result =
+                followService.getFolloweeList(PageRequest.of(0, 10), toUser.getId());
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(3);
+        assertThat(result.getContent().get(0).getNickname()).isEqualTo(fromUser1.getNickname());
+        assertThat(result.getContent().get(1).getNickname()).isEqualTo(fromUser2.getNickname());
+        assertThat(result.getContent().get(2).getNickname()).isEqualTo(fromUser3.getNickname());
+    }
+
+    @DisplayName("following 목록 조회에 성공한다")
+    @Test
+    void following_list_success() {
+
+        // given
+        User fromUser = createUser(1L);
+        User toUser1 = createUser(2L);
+        User toUser2 = createUser(3L);
+        User toUser3 = createUser(4L);
+        userRepository.save(fromUser);
+        userRepository.save(toUser1);
+        userRepository.save(toUser2);
+        userRepository.save(toUser3);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(fromUser)
+                .toUser(toUser1)
+                .build();
+        Follow follow2 = Follow.builder()
+                .fromUser(fromUser)
+                .toUser(toUser2)
+                .build();
+        Follow follow3 = Follow.builder()
+                .fromUser(fromUser)
+                .toUser(toUser3)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+        followRepository.save(follow3);
+
+        // when
+        Page<FollowDto.FollowListResponse> result =
+                followService.getFollowingList(PageRequest.of(0, 10), fromUser.getId());
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(3);
+        assertThat(result.getContent().get(0).getNickname()).isEqualTo(toUser1.getNickname());
+        assertThat(result.getContent().get(1).getNickname()).isEqualTo(toUser2.getNickname());
+        assertThat(result.getContent().get(2).getNickname()).isEqualTo(toUser3.getNickname());
     }
 }
