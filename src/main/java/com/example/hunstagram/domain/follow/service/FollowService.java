@@ -8,6 +8,8 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.global.exception.CustomException;
 import com.example.hunstagram.global.security.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,5 +51,11 @@ public class FollowService {
             followRepository.delete(follow);
             return new FollowDto.FollowResponse(false);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FollowDto.FollowListResponse> getFolloweeList(Pageable pageable, Long userId) {
+        return followRepository.findFolloweeList(pageable, userId)
+                .map(f -> FollowDto.FollowListResponse.fromEntity(f.getFromUser()));
     }
 }
