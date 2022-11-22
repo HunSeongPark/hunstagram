@@ -12,12 +12,15 @@ import java.util.Optional;
  * @date : 2022-11-08
  */
 public interface FollowRepository extends JpaRepository<Follow, Long> {
+
     @Query("select f from Follow f " +
             "where f.fromUser.id = :fromUserId " +
             "and f.toUser.id = :toUserId")
     Optional<Follow> findByFromAndToUserId(Long fromUserId, Long toUserId);
 
-    @Query("select f from Follow f " +
-            "where f.toUser.id = :userId ")
+    @Query("select f from Follow f where f.toUser.id = :userId")
     Page<Follow> findFolloweeList(Pageable pageable, Long userId);
+
+    @Query("select f from Follow f where f.fromUser.id = :userId")
+    Page<Follow> findFollowingList(Pageable pageable, Long userId);
 }
