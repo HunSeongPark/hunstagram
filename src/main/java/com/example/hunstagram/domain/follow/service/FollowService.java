@@ -58,4 +58,9 @@ public class FollowService {
         return followRepository.findFolloweeList(pageable, userId)
                 .map(f -> FollowDto.FollowListResponse.fromEntity(f.getFromUser()));
     }
+
+    public Page<FollowDto.FollowListResponse> getFollowingList(Pageable pageable, Long userId) {
+        return followRepository.findFollowingList(pageable, userId)
+                .map(f -> FollowDto.FollowListResponse.fromEntity(f.getToUser()));
+    }
 }
