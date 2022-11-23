@@ -2,8 +2,6 @@ package com.example.hunstagram.domain.user.controller;
 
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.service.UserService;
-import com.example.hunstagram.global.aws.service.AwsS3Service;
-import com.example.hunstagram.global.exception.CustomErrorCode;
 import com.example.hunstagram.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;
@@ -48,7 +45,7 @@ public class UserApiController {
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
-            throw new CustomException(TOKEN_NOT_FOUND);
+            throw new CustomException(TOKEN_NOT_EXIST);
         }
         String refreshToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
         return ResponseEntity.ok(userService.refresh(refreshToken));

@@ -55,7 +55,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         // Header에 토큰이 존재하지 않을 시
         if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
-            errorCode = CustomErrorCode.TOKEN_NOT_FOUND;
+            errorCode = CustomErrorCode.TOKEN_NOT_EXIST;
         } else {
             try {
                 String accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());

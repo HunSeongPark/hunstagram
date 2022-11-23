@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXIST;
 import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -266,9 +267,9 @@ public class PostServiceIntegrationTest {
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
-    @DisplayName("post 등록시 이미지가 존재하지 않으면 실패한다")
+    @DisplayName("post 등록시 이미지가 존재하지 않으면 실패한다 (null)")
     @Test
-    void create_post_image_not_found_fail() {
+    void create_post_image_not_exist_fail() {
 
         // given
         User user = createUser(1L);
@@ -291,6 +292,38 @@ public class PostServiceIntegrationTest {
                 .build();
 
         // when & then
-        assertThrows(NullPointerException.class, () -> postService.createPost(requestDto, null));
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.createPost(requestDto, null));
+        assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
+    }
+
+    @DisplayName("post 등록시 이미지가 존재하지 않으면 실패한다 (empty list)")
+    @Test
+    void create_post_image_empty_list_fail() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        String content = "content";
+        ArrayList<String> hashtags = new ArrayList<>();
+        hashtags.add("hash1");
+        hashtags.add("hash2");
+        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+                .content(content)
+                .hashtags(hashtags)
+                .build();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.createPost(requestDto, List.of()));
+        assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
     }
 }

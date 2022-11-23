@@ -53,7 +53,7 @@ public class JwtService {
     public String getAccessToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
-            throw new CustomException(TOKEN_NOT_FOUND);
+            throw new CustomException(TOKEN_NOT_EXIST);
         }
         return authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
     }

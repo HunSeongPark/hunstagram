@@ -7,7 +7,6 @@ import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.global.aws.service.AwsS3Service;
 import com.example.hunstagram.global.exception.CustomException;
 import com.example.hunstagram.global.security.service.JwtService;
-import com.example.hunstagram.global.type.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class UserService {
 
     private void validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new CustomException(EMAIL_ALREADY_EXISTS);
+            throw new CustomException(EMAIL_ALREADY_EXIST);
         }
     }
 
@@ -60,7 +59,7 @@ public class UserService {
 
     private void validateDuplicateNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
-            throw new CustomException(NICKNAME_ALREADY_EXISTS);
+            throw new CustomException(NICKNAME_ALREADY_EXIST);
         }
     }
 
