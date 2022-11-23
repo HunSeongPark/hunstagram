@@ -231,7 +231,7 @@ fi
 #
 
 eval "set -- $(
-        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        f '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
         xargs -n1 |
         sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
         tr '\n' ' '
