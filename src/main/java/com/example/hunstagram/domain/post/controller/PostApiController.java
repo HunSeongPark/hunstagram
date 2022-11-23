@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.post.controller;
 
+import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class PostApiController {
     @PostMapping
     public ResponseEntity<Void> createPost(
             @RequestPart(value = "data", required = false) PostDto.PostRequest requestDto,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
+            @RequestPart(value = "images") List<MultipartFile> images
     ) {
         postService.createPost(requestDto, images);
         return ResponseEntity.ok().build();

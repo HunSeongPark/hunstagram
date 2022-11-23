@@ -30,4 +30,9 @@ public class Hashtag {
 
     @Column(name = "hashtag", nullable = false)
     private String hashtag;
+
+    public Hashtag(String hashtag, Post post) {
+        this.hashtag = hashtag;
+        this.post = post;
+    }
 }
