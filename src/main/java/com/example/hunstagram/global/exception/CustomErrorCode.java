@@ -19,6 +19,9 @@ public enum CustomErrorCode {
     LOGIN_FAILED(UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
     USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
 
+    // Post
+    IMAGE_NOT_EXISTS(BAD_REQUEST, "게시글 이미지가 존재하지 않습니다."),
+
     // JWT
     TOKEN_NOT_FOUND(BAD_REQUEST, "JWT Token이 존재하지 않습니다."),
     INVALID_TOKEN(BAD_REQUEST, "유효하지 않은 JWT Token 입니다."),

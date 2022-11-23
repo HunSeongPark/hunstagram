@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXISTS;
 import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
 
 /**
@@ -38,6 +39,10 @@ public class PostService {
     private final PostImageRepository postImageRepository;
 
     public void createPost(PostDto.PostRequest requestDto, List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            throw new CustomException(IMAGE_NOT_EXISTS);
+        }
+
         User user = userRepository.findById(jwtService.getId())
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
         List<String> imagePaths = images.stream().map(awsS3Service::uploadImage).toList();
