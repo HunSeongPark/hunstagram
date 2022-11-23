@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-import static com.auth0.jwt.algorithms.Algorithm.*;
-import static com.example.hunstagram.global.exception.CustomErrorCode.*;
+import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
+import static com.example.hunstagram.global.exception.CustomErrorCode.TOKEN_NOT_EXIST;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**

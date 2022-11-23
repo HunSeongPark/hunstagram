@@ -1,7 +1,6 @@
 package com.example.hunstagram.domain.follow.dto;
 
 import com.example.hunstagram.domain.user.entity.User;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

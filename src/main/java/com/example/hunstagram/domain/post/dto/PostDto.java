@@ -1,6 +1,5 @@
 package com.example.hunstagram.domain.post.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,15 +1,16 @@
 package com.example.hunstagram.domain.user.dto;
 
 import com.example.hunstagram.domain.user.entity.User;
-import lombok.*;
-import org.hibernate.validator.constraints.Range;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 /**
  * @author : Hunseong-Park

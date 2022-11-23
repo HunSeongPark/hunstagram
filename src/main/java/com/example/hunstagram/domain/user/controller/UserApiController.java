@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.*;
+import static com.example.hunstagram.global.exception.CustomErrorCode.TOKEN_NOT_EXIST;
 import static com.example.hunstagram.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 

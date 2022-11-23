@@ -27,6 +27,6 @@ public class UserFailureHandler implements AuthenticationFailureHandler {
         response.setStatus(LOGIN_FAILED.getHttpStatus().value());
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        new ObjectMapper().writeValue(response.getWriter(),errorResponse);
+        new ObjectMapper().writeValue(response.getWriter(), errorResponse);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static com.example.hunstagram.global.security.service.JwtService.*;
-import static com.example.hunstagram.global.type.RoleType.*;
+import static com.example.hunstagram.global.type.RoleType.USER;
 
 /**
  * @author : Hunseong-Park

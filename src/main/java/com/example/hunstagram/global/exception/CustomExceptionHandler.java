@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Objects;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;

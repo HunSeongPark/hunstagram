@@ -32,7 +32,7 @@ public class AwsS3MockConfig {
 
     @Bean
     @Primary
-    public AmazonS3 amazonS3(S3Mock s3Mock){
+    public AmazonS3 amazonS3(S3Mock s3Mock) {
         s3Mock.start();
         AwsClientBuilder.EndpointConfiguration endpoint =
                 new AwsClientBuilder.EndpointConfiguration("http://localhost:8001", region);
