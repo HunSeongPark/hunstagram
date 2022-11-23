@@ -26,7 +26,7 @@
 - test: 테스트 관련 코드
 - chore: 빌드 관련 수정 (application.yml, build.gradle, .gitignore ..)
 
-## 새롭게 알게된 것 
-- Entity Class에 @NoArgsConstructor(access=PROTECTED) 
+## 새롭게 알게된 것
+- [Entity Class에 Lombok @NoArgsConstructor(access=PROTECTED)를 붙이는 이유](https://hungseong.tistory.com/70)
 - Mock S3 라이브러리 사용하여 로컬 환경에서 S3 테스트
 - Multipart 테스트 (Controller Unit Test, Service Integration Test)
