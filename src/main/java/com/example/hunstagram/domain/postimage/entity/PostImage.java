@@ -31,4 +31,9 @@ public class PostImage extends BaseTimeEntity {
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
+
+    public PostImage(String imageUrl, Post post) {
+        this.imageUrl = imageUrl;
+        this.post = post;
+    }
 }
