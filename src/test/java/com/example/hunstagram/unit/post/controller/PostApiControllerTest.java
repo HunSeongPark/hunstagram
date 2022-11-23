@@ -87,27 +87,4 @@ public class PostApiControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
-    @DisplayName("post 등록 시 image가 없으면 실패한다")
-    @WithMockUser
-    @Test
-    void create_post_image_not_found_fail() throws Exception {
-
-        // given
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
-                .content("content")
-                .hashtags(List.of("hash1", "hash2"))
-                .build();
-        String body = mapper.writeValueAsString(requestDto);
-        MockMultipartFile bodyFile
-                = new MockMultipartFile("data", "data", "application/json", body.getBytes(StandardCharsets.UTF_8));
-
-        // when & then
-        mvc.perform(multipart("/v1/posts")
-                        .file(bodyFile)
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                )
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-    }
 }

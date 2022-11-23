@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
-import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXIST;
 import static com.example.hunstagram.global.exception.CustomErrorCode.INVALID_TOKEN;
 import static com.example.hunstagram.global.security.service.JwtService.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,7 +94,7 @@ public class UserServiceIntegrationTest {
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> userService.signup(requestDto));
-        assertThat(e.getErrorCode()).isEqualTo(EMAIL_ALREADY_EXISTS);
+        assertThat(e.getErrorCode()).isEqualTo(EMAIL_ALREADY_EXIST);
     }
 
     @DisplayName("회원가입을 위한 정보 입력 및 회원 생성에 성공한다 (프로필이미지 X)")
@@ -283,7 +283,7 @@ public class UserServiceIntegrationTest {
 
     @DisplayName("token 재발급 시 user table 내 refresh token이 없으면 실패한다")
     @Test
-    void refresh_user_token_not_found_fail() {
+    void refresh_user_token_not_exist_fail() {
 
         // given
         String email = "gnstjd0831@naver.com";

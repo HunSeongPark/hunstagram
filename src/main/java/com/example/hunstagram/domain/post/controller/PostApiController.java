@@ -26,7 +26,7 @@ public class PostApiController {
     @PostMapping
     public ResponseEntity<Void> createPost(
             @RequestPart(value = "data", required = false) PostDto.PostRequest requestDto,
-            @RequestPart(value = "images") List<MultipartFile> images
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
         postService.createPost(requestDto, images);
         return ResponseEntity.ok().build();

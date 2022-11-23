@@ -132,7 +132,7 @@ class UserApiControllerTest {
     @DisplayName("token 재발급 시 token이 존재하지 않으면 실패한다")
     @WithMockUser
     @Test
-    void refresh_token_not_found_fail() throws Exception {
+    void refresh_token_not_exist_fail() throws Exception {
         // given
         given(userService.refresh(any())).willReturn(new HashMap<>());
 

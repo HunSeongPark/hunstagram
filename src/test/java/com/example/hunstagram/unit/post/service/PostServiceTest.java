@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXIST;
 import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -200,5 +201,45 @@ public class PostServiceTest {
         CustomException e = assertThrows(CustomException.class,
                 () -> postService.createPost(requestDto, List.of(image)));
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
+    }
+
+    @DisplayName("post 등록 시 이미지가 존재하지 않으면 실패한다 (null)")
+    @Test
+    void create_post_image_not_exist_fail() {
+
+        // given
+        String content = "content";
+        ArrayList<String> hashtags = new ArrayList<>();
+        hashtags.add("hash1");
+        hashtags.add("hash2");
+        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+                .content("content")
+                .hashtags(hashtags)
+                .build();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.createPost(requestDto, null));
+        assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
+    }
+
+    @DisplayName("post 등록 시 이미지가 존재하지 않으면 실패한다 (empty list)")
+    @Test
+    void create_post_image_empty_list_fail() {
+
+        // given
+        String content = "content";
+        ArrayList<String> hashtags = new ArrayList<>();
+        hashtags.add("hash1");
+        hashtags.add("hash2");
+        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+                .content("content")
+                .hashtags(hashtags)
+                .build();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.createPost(requestDto, List.of()));
+        assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
     }
 }

@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXISTS;
-import static com.example.hunstagram.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXISTS;
+import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXIST;
+import static com.example.hunstagram.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +71,7 @@ class UserServiceTest {
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> userService.signup(requestDto));
-        assertThat(e.getErrorCode()).isEqualTo(EMAIL_ALREADY_EXISTS);
+        assertThat(e.getErrorCode()).isEqualTo(EMAIL_ALREADY_EXIST);
     }
 
     @DisplayName("회원가입을 위한 정보 입력에 성공한다")
@@ -116,6 +116,6 @@ class UserServiceTest {
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> userService.signupInfo(requestDto, null));
-        assertThat(e.getErrorCode()).isEqualTo(NICKNAME_ALREADY_EXISTS);
+        assertThat(e.getErrorCode()).isEqualTo(NICKNAME_ALREADY_EXIST);
     }
 }
