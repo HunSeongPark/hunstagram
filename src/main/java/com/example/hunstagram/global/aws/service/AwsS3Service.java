@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_UPLOAD_FAILED;
 
@@ -30,17 +33,20 @@ public class AwsS3Service {
 
     public String uploadImage(MultipartFile file) {
         try {
-            String originalFilename = file.getOriginalFilename();
+            String fileType = "." + file.getContentType().split("/")[1];
+            String randomNum = UUID.randomUUID().toString().substring(0, 6);
+            String filename = System.currentTimeMillis() + randomNum + fileType;
+
             long size = file.getSize();
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(size);
             amazonS3.putObject(
-                    new PutObjectRequest(bucket, originalFilename, file.getInputStream(), objectMetadata)
+                    new PutObjectRequest(bucket, filename, file.getInputStream(), objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
-            return amazonS3.getUrl(bucket, originalFilename).toString();
+            return amazonS3.getUrl(bucket, filename).toString();
         } catch (IOException e) {
             throw new CustomException(IMAGE_UPLOAD_FAILED, e);
         }
