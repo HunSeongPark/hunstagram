@@ -30,8 +30,8 @@ public enum CustomErrorCode {
 
     // General
     INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다."),
-    INVALID_VALUE(BAD_REQUEST, "잘못된 입력값입니다.");
-
+    INVALID_VALUE(BAD_REQUEST, "잘못된 입력값입니다."),
+    SERVER_INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "서버 내부에 오류가 발생했습니다.");
     private final HttpStatus httpStatus;
     private final String errorMessage;
 }
