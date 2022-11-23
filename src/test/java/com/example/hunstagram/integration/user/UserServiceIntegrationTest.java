@@ -150,7 +150,6 @@ public class UserServiceIntegrationTest {
         User user = userRepository.findAll().get(0);
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getProfileImage()).isNotNull();
-        System.out.println(user.getProfileImage());
     }
 
     @DisplayName("refresh token을 통해 access(refresh) token 재발급에 성공한다")
@@ -332,7 +331,6 @@ public class UserServiceIntegrationTest {
                 .build();
         userService.signupInfo(requestDto, null);
         User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
-        System.out.println("user Id = " + user.getId());
         String accessToken = jwtService.createAccessToken(email, RoleType.USER, user.getId());
         String refreshToken = jwtService.createRefreshToken(email);
         user.updateRefreshToken(refreshToken);
@@ -370,7 +368,6 @@ public class UserServiceIntegrationTest {
                 .build();
         userService.signupInfo(requestDto, null);
         User user = userRepository.findByEmail(email).orElseThrow(RuntimeException::new);
-        System.out.println("user Id = " + user.getId());
         // ** 잘못된 email이 들어간 access Token
         String accessToken = jwtService.createAccessToken(email + "dummy", RoleType.USER, user.getId());
         String refreshToken = jwtService.createRefreshToken(email);
