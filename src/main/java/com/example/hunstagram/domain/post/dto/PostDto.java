@@ -1,8 +1,13 @@
 package com.example.hunstagram.domain.post.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+
+import static lombok.AccessLevel.PRIVATE;
 
 /**
  * @author : Hunseong-Park
@@ -10,6 +15,8 @@ import java.util.List;
  */
 public class PostDto {
 
+    @Builder
+    @AllArgsConstructor(access = PRIVATE)
     @Getter
     public static class PostRequest {
         private String content;
