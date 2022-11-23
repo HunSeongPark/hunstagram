@@ -26,7 +26,7 @@ public class CustomExceptionHandler {
     // CustomException
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e, HttpServletRequest request) {
-        log.error("url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+        log.error("[CustomException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
                 request.getRequestURL(), e.getErrorCode(), e.getErrorMessage(), e.getCause());
 
         return ResponseEntity
@@ -40,7 +40,8 @@ public class CustomExceptionHandler {
             HttpRequestMethodNotSupportedException e,
             HttpServletRequest request
     ) {
-        log.error("url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+        log.error("[HttpRequestMethodNotSupportedException] " +
+                        "url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
                 request.getRequestURL(), INVALID_HTTP_METHOD, INVALID_HTTP_METHOD.getErrorMessage(), e);
 
         return ResponseEntity
@@ -55,7 +56,7 @@ public class CustomExceptionHandler {
             HttpServletRequest request
     ) {
         String validationMessage = Objects.requireNonNull(e.getFieldError()).getDefaultMessage();
-        log.error("url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+        log.error("[MethodArgumentNotValidException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
                 request.getRequestURL(), INVALID_VALUE, validationMessage, e);
 
         CustomException customException = new CustomException(INVALID_VALUE, validationMessage);
@@ -67,7 +68,7 @@ public class CustomExceptionHandler {
     // Expired Refresh Token
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<ErrorResponse> refreshTokenExpiredException(HttpServletRequest request) {
-        log.error("url: {} | errorCode: {} | errorMessage: {}",
+        log.error("[TokenExpiredException] url: {} | errorCode: {} | errorMessage: {}",
                 request.getRequestURL(), REFRESH_TOKEN_EXPIRED, REFRESH_TOKEN_EXPIRED.getErrorMessage());
         return ResponseEntity
                 .status(REFRESH_TOKEN_EXPIRED.getHttpStatus())
@@ -77,10 +78,20 @@ public class CustomExceptionHandler {
     // 잘못된 Refresh Token
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<ErrorResponse> refreshTokenException(HttpServletRequest request) {
-        log.error("url: {} | errorCode: {} | errorMessage: {}",
+        log.error("[JWTVerificationException] url: {} | errorCode: {} | errorMessage: {}",
                 request.getRequestURL(), INVALID_TOKEN, INVALID_TOKEN.getErrorMessage());
         return ResponseEntity
                 .status(INVALID_TOKEN.getHttpStatus())
                 .body(new ErrorResponse(INVALID_TOKEN));
+    }
+
+    // 이외 Error
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> exception(Exception e, HttpServletRequest request) {
+        log.error("[Common Exception] url: {} | errorMessage: {}",
+                request.getRequestURL(), e.getMessage());
+        return ResponseEntity
+                .status(SERVER_INTERNAL_ERROR.getHttpStatus())
+                .body(new ErrorResponse(SERVER_INTERNAL_ERROR));
     }
 }
