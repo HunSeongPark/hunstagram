@@ -3,7 +3,8 @@
 
 ## Goals
 - (Jacoco) Domain 관련 Controller, Service 단에 대해 테스트 커버리지 100%
-- 통합테스트, 유닛테스트 작성
+  - 도메인 별 Controller, Service 유닛테스트 작성
+  - 도메인 별 Service 통합테스트 작성
 - (Swagger) API 명세 작성
 - (AWS S3) 이미지 저장 및 조회
 - (Jenkins, Docker, AWC EC2) Docker 사용 컨테이너 배포 및 CI/CD
