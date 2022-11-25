@@ -64,7 +64,7 @@ public class PostApiControllerTest {
     void create_post_success() throws Exception {
 
         // given
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .hashtags(List.of("hash1", "hash2"))
                 .build();

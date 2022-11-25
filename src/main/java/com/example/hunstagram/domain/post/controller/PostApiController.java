@@ -22,7 +22,7 @@ public class PostApiController {
 
     @PostMapping
     public ResponseEntity<Void> createPost(
-            @RequestPart(value = "data", required = false) PostDto.CreateRequest requestDto,
+            @RequestPart(value = "data", required = false) PostDto.Request requestDto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
         postService.createPost(requestDto, images);
@@ -31,7 +31,7 @@ public class PostApiController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity<Void> updatePost(
-            @RequestBody PostDto.EditRequest requestDto,
+            @RequestBody PostDto.Request requestDto,
             @PathVariable Long postId
     ) {
         postService.updatePost(requestDto, postId);

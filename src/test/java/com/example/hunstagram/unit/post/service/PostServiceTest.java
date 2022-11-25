@@ -77,7 +77,7 @@ public class PostServiceTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .hashtags(hashtags)
                 .build();
@@ -107,7 +107,7 @@ public class PostServiceTest {
         given(userRepository.findById(any())).willReturn(Optional.of(user));
         given(awsS3Service.uploadImage(any())).willReturn("http://test.image.path.com");
         String content = "content";
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .build();
 
@@ -138,7 +138,7 @@ public class PostServiceTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .hashtags(hashtags)
                 .build();
 
@@ -187,7 +187,7 @@ public class PostServiceTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .hashtags(hashtags)
                 .build();
@@ -212,7 +212,7 @@ public class PostServiceTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .hashtags(hashtags)
                 .build();
@@ -232,7 +232,7 @@ public class PostServiceTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
+        PostDto.Request requestDto = PostDto.Request.builder()
                 .content("content")
                 .hashtags(hashtags)
                 .build();

@@ -17,7 +17,7 @@ public class PostDto {
     @Builder
     @AllArgsConstructor(access = PRIVATE)
     @Getter
-    public static class CreateRequest {
+    public static class Request {
         private String content;
         private List<String> hashtags;
     }
