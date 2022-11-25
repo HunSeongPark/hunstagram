@@ -31,9 +31,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXIST;
-import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -325,5 +325,235 @@ public class PostServiceIntegrationTest {
         CustomException e = assertThrows(CustomException.class,
                 () -> postService.createPost(requestDto, List.of()));
         assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
+    }
+
+    @DisplayName("post 수정에 성공한다 (content, hashtag 수정)")
+    @Test
+    void update_post_content_hashtag_success() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(user)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        Hashtag hash1 = new Hashtag("hash1", post);
+        Hashtag hash2 = new Hashtag("hash2", post);
+        hashtagRepository.save(hash1);
+        hashtagRepository.save(hash2);
+
+        em.flush();
+        em.clear();
+
+        String changedContent = "changed Content";
+        List<String> changedHashtags = List.of("hash3", "hash4", "hash5");
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content(changedContent)
+                .hashtags(changedHashtags)
+                .build();
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when
+        postService.updatePost(requestDto, post.getId());
+
+        // then
+        Post changedPost = postRepository.findById(post.getId()).get();
+        assertThat(changedPost.getContent()).isEqualTo(changedContent);
+        assertThat(changedPost.getHashtags().size()).isEqualTo(changedHashtags.size());
+        assertThat(changedPost.getHashtags().get(0).getHashtag()).isEqualTo(changedHashtags.get(0));
+        assertThat(changedPost.getHashtags().get(1).getHashtag()).isEqualTo(changedHashtags.get(1));
+        assertThat(changedPost.getHashtags().get(2).getHashtag()).isEqualTo(changedHashtags.get(2));
+    }
+
+    @DisplayName("post 수정에 성공한다 (content 수정)")
+    @Test
+    void update_post_content_success() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(user)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        Hashtag hash1 = new Hashtag("hash1", post);
+        Hashtag hash2 = new Hashtag("hash2", post);
+        hashtagRepository.save(hash1);
+        hashtagRepository.save(hash2);
+
+        em.flush();
+        em.clear();
+
+        String changedContent = "changed Content";
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content(changedContent)
+                .hashtags(Stream.of(hash1, hash2).map(Hashtag::getHashtag).toList()) // 기존 Hashtag 그대로
+                .build();
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when
+        postService.updatePost(requestDto, post.getId());
+
+        // then
+        Post changedPost = postRepository.findById(post.getId()).get();
+        assertThat(changedPost.getContent()).isEqualTo(changedContent);
+        assertThat(changedPost.getHashtags().size()).isEqualTo(2);
+        assertThat(changedPost.getHashtags().get(0).getHashtag()).isEqualTo(hash1.getHashtag());
+        assertThat(changedPost.getHashtags().get(1).getHashtag()).isEqualTo(hash2.getHashtag());
+    }
+
+    @DisplayName("post 수정에 성공한다 (hashtag 수정)")
+    @Test
+    void update_post_hashtag_success() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(user)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        Hashtag hash1 = new Hashtag("hash1", post);
+        Hashtag hash2 = new Hashtag("hash2", post);
+        hashtagRepository.save(hash1);
+        hashtagRepository.save(hash2);
+
+        em.flush();
+        em.clear();
+
+        List<String> changedHashtags = List.of("hash3", "hash4", "hash5");
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content(post.getContent()) // 기존 Content 그대로
+                .hashtags(changedHashtags)
+                .build();
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when
+        postService.updatePost(requestDto, post.getId());
+
+        // then
+        Post changedPost = postRepository.findById(post.getId()).get();
+        assertThat(changedPost.getContent()).isEqualTo(post.getContent());
+        assertThat(changedPost.getHashtags().size()).isEqualTo(changedHashtags.size());
+        assertThat(changedPost.getHashtags().get(0).getHashtag()).isEqualTo(changedHashtags.get(0));
+        assertThat(changedPost.getHashtags().get(1).getHashtag()).isEqualTo(changedHashtags.get(1));
+        assertThat(changedPost.getHashtags().get(2).getHashtag()).isEqualTo(changedHashtags.get(2));
+    }
+
+    @DisplayName("post 수정 시 post가 없으면 실패한다")
+    @Test
+    void update_post_not_found_fail() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(user)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        Hashtag hash1 = new Hashtag("hash1", post);
+        Hashtag hash2 = new Hashtag("hash2", post);
+        hashtagRepository.save(hash1);
+        hashtagRepository.save(hash2);
+
+        em.flush();
+        em.clear();
+
+        String changedContent = "changed Content";
+        List<String> changedHashtags = List.of("hash3", "hash4", "hash5");
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content(changedContent)
+                .hashtags(changedHashtags)
+                .build();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.updatePost(requestDto, post.getId() + 1));// 존재하지 않는 postId
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+    }
+
+    @DisplayName("post 수정 시 로그인 한 사용자가 쓴 post가 아니면 실패한다")
+    @Test
+    void update_post_not_own_post_fail() {
+
+        // given
+        User writer = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(writer);
+        userRepository.save(other);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(writer)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        Hashtag hash1 = new Hashtag("hash1", post);
+        Hashtag hash2 = new Hashtag("hash2", post);
+        hashtagRepository.save(hash1);
+        hashtagRepository.save(hash2);
+
+        em.flush();
+        em.clear();
+
+        String changedContent = "changed Content";
+        List<String> changedHashtags = List.of("hash3", "hash4", "hash5");
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content(changedContent)
+                .hashtags(changedHashtags)
+                .build();
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(other.getEmail(), RoleType.USER, other.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(other.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.updatePost(requestDto, post.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_POST);
     }
 }
