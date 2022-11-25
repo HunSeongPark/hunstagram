@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p " +
-            "join fetch p.hashtags h " +
+            "left join fetch p.hashtags h " +
             "join fetch p.user u " +
             "where p.id = :postId")
     Optional<Post> findByIdWithHashtagAndUser(Long postId);
