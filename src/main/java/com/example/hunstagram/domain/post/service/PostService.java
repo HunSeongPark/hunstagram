@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXIST;
-import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 
 /**
  * @author : Hunseong-Park
@@ -67,5 +67,18 @@ public class PostService {
         // 연관된 PostImage 저장
         List<PostImage> postImages = imagePaths.stream().map(i -> new PostImage(i, post)).toList();
         postImageRepository.saveAll(postImages);
+    }
+
+    public void updatePost(PostDto.Request requestDto, Long postId) {
+        Post post = postRepository.findByIdWithHashtagAndUser(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        Long userId = jwtService.getId();
+
+        // 로그인 한 사용자가 작성한 게시글인지 판단
+        if (!Objects.equals(post.getUser().getId(), userId)) {
+            throw new CustomException(NOT_USER_OWN_POST);
+        }
+        hashtagRepository.deleteAll(post.getHashtags());
+        post.update(requestDto);
     }
 }
