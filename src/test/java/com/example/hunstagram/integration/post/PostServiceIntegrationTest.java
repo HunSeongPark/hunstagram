@@ -99,7 +99,7 @@ public class PostServiceIntegrationTest {
                 .build();
 
         String fileName = "tet";
-        String contentType = "image";
+        String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
@@ -139,7 +139,7 @@ public class PostServiceIntegrationTest {
                 .build();
 
         String fileName = "tet";
-        String contentType = "image";
+        String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
@@ -179,7 +179,7 @@ public class PostServiceIntegrationTest {
                 .build();
 
         String fileName = "tet";
-        String contentType = "image";
+        String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
@@ -214,7 +214,7 @@ public class PostServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         String fileName = "tet";
-        String contentType = "image";
+        String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));

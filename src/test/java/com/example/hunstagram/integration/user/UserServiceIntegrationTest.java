@@ -132,7 +132,7 @@ public class UserServiceIntegrationTest {
         String nickname = "bba_koon";
 
         String fileName = "tet";
-        String contentType = "image";
+        String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile(fileName, fileName, contentType, new FileInputStream(filePath));
