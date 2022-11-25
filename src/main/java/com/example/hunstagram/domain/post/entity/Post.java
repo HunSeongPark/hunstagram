@@ -1,6 +1,8 @@
 package com.example.hunstagram.domain.post.entity;
 
 import com.example.hunstagram.domain.BaseTimeEntity;
+import com.example.hunstagram.domain.hashtag.entity.Hashtag;
+import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
@@ -39,4 +44,15 @@ public class Post extends BaseTimeEntity {
 
     @Column(name = "content")
     private String content;
+
+    @OneToMany(fetch = LAZY, mappedBy = "post", cascade = ALL)
+    private List<Hashtag> hashtags;
+
+    public void update(PostDto.Request requestDto) {
+        this.content = requestDto.getContent();
+        this.hashtags = requestDto.getHashtags()
+                .stream()
+                .map(h-> new Hashtag(h, this))
+                .toList();
+    }
 }
