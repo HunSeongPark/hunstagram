@@ -77,11 +77,11 @@ public class FollowServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // when
-        FollowDto.FollowResponse followResponse = followService.follow(toUser.getId());
+        FollowDto.Response response = followService.follow(toUser.getId());
         Follow follow = followRepository.findByFromAndToUserId(fromUser.getId(), toUser.getId()).orElse(null);
 
         // then
-        assertThat(followResponse.getIsFollowAdd()).isTrue();
+        assertThat(response.getIsFollowAdd()).isTrue();
         assertThat(follow).isNotNull();
         assertThat(follow.getFromUser().getId()).isEqualTo(fromUser.getId());
         assertThat(follow.getToUser().getId()).isEqualTo(toUser.getId());
@@ -157,11 +157,11 @@ public class FollowServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // when
-        FollowDto.FollowResponse followResponse = followService.follow(toUser.getId());
+        FollowDto.Response response = followService.follow(toUser.getId());
         Follow follow = followRepository.findByFromAndToUserId(fromUser.getId(), toUser.getId()).orElse(null);
 
         // then
-        assertThat(followResponse.getIsFollowAdd()).isFalse();
+        assertThat(response.getIsFollowAdd()).isFalse();
         assertThat(follow).isNull();
     }
 
@@ -196,7 +196,7 @@ public class FollowServiceIntegrationTest {
         followRepository.save(follow3);
 
         // when
-        Page<FollowDto.FollowListResponse> result =
+        Page<FollowDto.ListResponse> result =
                 followService.getFolloweeList(PageRequest.of(0, 10), toUser.getId());
 
         // then
@@ -260,7 +260,7 @@ public class FollowServiceIntegrationTest {
         followRepository.save(follow3);
 
         // when
-        Page<FollowDto.FollowListResponse> result =
+        Page<FollowDto.ListResponse> result =
                 followService.getFollowingList(PageRequest.of(0, 10), fromUser.getId());
 
         // then

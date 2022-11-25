@@ -38,7 +38,7 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final PostImageRepository postImageRepository;
 
-    public void createPost(PostDto.PostRequest requestDto, List<MultipartFile> images) {
+    public void createPost(PostDto.CreateRequest requestDto, List<MultipartFile> images) {
         if (images == null || images.isEmpty()) {
             throw new CustomException(IMAGE_NOT_EXIST);
         }

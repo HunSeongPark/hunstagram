@@ -14,20 +14,20 @@ public class FollowDto {
 
     @Getter
     @AllArgsConstructor
-    public static class FollowResponse {
+    public static class Response {
         // true 시 팔로우 추가, false 시 팔로우 취소
         private Boolean isFollowAdd;
     }
 
     @Getter
     @AllArgsConstructor(access = PRIVATE)
-    public static class FollowListResponse {
+    public static class ListResponse {
         private String name;
         private String nickname;
         private String profileImage;
 
-        public static FollowListResponse fromEntity(User user) {
-            return new FollowListResponse(user.getName(), user.getNickname(), user.getProfileImage());
+        public static ListResponse fromEntity(User user) {
+            return new ListResponse(user.getName(), user.getNickname(), user.getProfileImage());
         }
     }
 }

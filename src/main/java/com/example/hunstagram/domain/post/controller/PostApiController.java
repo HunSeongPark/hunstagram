@@ -4,10 +4,7 @@ import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -25,10 +22,19 @@ public class PostApiController {
 
     @PostMapping
     public ResponseEntity<Void> createPost(
-            @RequestPart(value = "data", required = false) PostDto.PostRequest requestDto,
+            @RequestPart(value = "data", required = false) PostDto.CreateRequest requestDto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
         postService.createPost(requestDto, images);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{postId}")
+    public ResponseEntity<Void> updatePost(
+            @RequestBody PostDto.EditRequest requestDto,
+            @PathVariable Long postId
+    ) {
+        postService.updatePost(requestDto, postId);
         return ResponseEntity.ok().build();
     }
 }

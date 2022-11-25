@@ -93,7 +93,7 @@ public class PostServiceIntegrationTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .content(content)
                 .hashtags(hashtags)
                 .build();
@@ -134,7 +134,7 @@ public class PostServiceIntegrationTest {
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         String content = "content";
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .content(content)
                 .build();
 
@@ -174,7 +174,7 @@ public class PostServiceIntegrationTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .hashtags(hashtags)
                 .build();
 
@@ -250,7 +250,7 @@ public class PostServiceIntegrationTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .content(content)
                 .hashtags(hashtags)
                 .build();
@@ -286,7 +286,7 @@ public class PostServiceIntegrationTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .content(content)
                 .hashtags(hashtags)
                 .build();
@@ -316,7 +316,7 @@ public class PostServiceIntegrationTest {
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
         hashtags.add("hash2");
-        PostDto.PostRequest requestDto = PostDto.PostRequest.builder()
+        PostDto.CreateRequest requestDto = PostDto.CreateRequest.builder()
                 .content(content)
                 .hashtags(hashtags)
                 .build();
