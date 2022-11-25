@@ -64,10 +64,10 @@ public class FollowServiceTest {
         given(userRepository.findById(2L)).willReturn(Optional.of(toUser));
 
         // when
-        FollowDto.FollowResponse followResponse = followService.follow(2L);
+        FollowDto.Response response = followService.follow(2L);
 
         // then
-        assertThat(followResponse.getIsFollowAdd()).isTrue();
+        assertThat(response.getIsFollowAdd()).isTrue();
     }
 
     @DisplayName("follow 추가시 fromUser가 없으면 실패한다")
@@ -118,9 +118,9 @@ public class FollowServiceTest {
         given(followRepository.findByFromAndToUserId(any(), any())).willReturn(Optional.of(follow));
 
         // when
-        FollowDto.FollowResponse followResponse = followService.follow(2L);
+        FollowDto.Response response = followService.follow(2L);
 
         // then
-        assertThat(followResponse.getIsFollowAdd()).isFalse();
+        assertThat(response.getIsFollowAdd()).isFalse();
     }
 }

@@ -2,7 +2,7 @@ package com.example.hunstagram.unit.follow.controller;
 
 import com.example.hunstagram.domain.follow.controller.FollowApiController;
 import com.example.hunstagram.domain.follow.dto.FollowDto;
-import com.example.hunstagram.domain.follow.dto.FollowDto.FollowListResponse;
+import com.example.hunstagram.domain.follow.dto.FollowDto.ListResponse;
 import com.example.hunstagram.domain.follow.entity.Follow;
 import com.example.hunstagram.domain.follow.entity.FollowRepository;
 import com.example.hunstagram.domain.follow.service.FollowService;
@@ -78,7 +78,7 @@ public class FollowApiControllerTest {
     void follow_add() throws Exception {
 
         // given
-        given(followService.follow(any())).willReturn(new FollowDto.FollowResponse(true));
+        given(followService.follow(any())).willReturn(new FollowDto.Response(true));
 
         // when & then
         mvc.perform(post("/v1/follow/2").with(SecurityMockMvcRequestPostProcessors.csrf()))
@@ -93,7 +93,7 @@ public class FollowApiControllerTest {
     void follow_cancel() throws Exception {
 
         // given
-        given(followService.follow(any())).willReturn(new FollowDto.FollowResponse(false));
+        given(followService.follow(any())).willReturn(new FollowDto.Response(false));
 
         // when & then
         mvc.perform(post("/v1/follow/2").with(SecurityMockMvcRequestPostProcessors.csrf()))
@@ -115,7 +115,7 @@ public class FollowApiControllerTest {
                 .toUser(toUser)
                 .build();
 
-        List<FollowListResponse> followList = List.of(FollowListResponse.fromEntity(follow.getToUser()));
+        List<ListResponse> followList = List.of(ListResponse.fromEntity(follow.getToUser()));
         given(followService.getFolloweeList(any(), any())).willReturn(new PageImpl<>(followList));
 
         // when & then
@@ -139,7 +139,7 @@ public class FollowApiControllerTest {
                 .toUser(toUser)
                 .build();
 
-        List<FollowListResponse> followList = List.of(FollowListResponse.fromEntity(follow.getToUser()));
+        List<ListResponse> followList = List.of(ListResponse.fromEntity(follow.getToUser()));
         given(followService.getFollowingList(any(), any())).willReturn(new PageImpl<>(followList));
 
         // when & then

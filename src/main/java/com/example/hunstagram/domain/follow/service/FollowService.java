@@ -28,7 +28,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
-    public FollowDto.FollowResponse follow(Long toUserId) {
+    public FollowDto.Response follow(Long toUserId) {
         Long fromUserId = jwtService.getId();
         Follow follow = followRepository.findByFromAndToUserId(fromUserId, toUserId)
                 .orElse(null);
@@ -45,25 +45,25 @@ public class FollowService {
                     .toUser(toUser)
                     .build();
             followRepository.save(follow);
-            return new FollowDto.FollowResponse(true);
+            return new FollowDto.Response(true);
         } else {
             // 팔로우 취소
             followRepository.delete(follow);
-            return new FollowDto.FollowResponse(false);
+            return new FollowDto.Response(false);
         }
     }
 
     @Transactional(readOnly = true)
-    public Page<FollowDto.FollowListResponse> getFolloweeList(Pageable pageable, Long userId) {
+    public Page<FollowDto.ListResponse> getFolloweeList(Pageable pageable, Long userId) {
         validateUserExists(userId);
         return followRepository.findFolloweeList(pageable, userId)
-                .map(f -> FollowDto.FollowListResponse.fromEntity(f.getFromUser()));
+                .map(f -> FollowDto.ListResponse.fromEntity(f.getFromUser()));
     }
 
-    public Page<FollowDto.FollowListResponse> getFollowingList(Pageable pageable, Long userId) {
+    public Page<FollowDto.ListResponse> getFollowingList(Pageable pageable, Long userId) {
         validateUserExists(userId);
         return followRepository.findFollowingList(pageable, userId)
-                .map(f -> FollowDto.FollowListResponse.fromEntity(f.getToUser()));
+                .map(f -> FollowDto.ListResponse.fromEntity(f.getToUser()));
     }
 
     private void validateUserExists(Long userId) {

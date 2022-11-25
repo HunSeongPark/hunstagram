@@ -20,19 +20,19 @@ public class FollowApiController {
     private final FollowService followService;
 
     @PostMapping("/{toUserId}")
-    public ResponseEntity<FollowDto.FollowResponse> follow(@PathVariable Long toUserId) {
+    public ResponseEntity<FollowDto.Response> follow(@PathVariable Long toUserId) {
         return ResponseEntity.ok(followService.follow(toUserId));
     }
 
     @GetMapping("/followee/{userId}")
-    public ResponseEntity<Page<FollowDto.FollowListResponse>> getFolloweeList(
+    public ResponseEntity<Page<FollowDto.ListResponse>> getFolloweeList(
             Pageable pageable, @PathVariable Long userId
     ) {
         return ResponseEntity.ok(followService.getFolloweeList(pageable, userId));
     }
 
     @GetMapping("/following/{userId}")
-    public ResponseEntity<Page<FollowDto.FollowListResponse>> getFollowingList(
+    public ResponseEntity<Page<FollowDto.ListResponse>> getFollowingList(
             Pageable pageable, @PathVariable Long userId
     ) {
         return ResponseEntity.ok(followService.getFollowingList(pageable, userId));
