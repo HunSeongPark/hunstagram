@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -25,7 +26,9 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,6 +85,28 @@ public class PostApiControllerTest {
         mvc.perform(multipart("/v1/posts")
                         .file(bodyFile)
                         .file(image)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("post 수정에 성공한다")
+    @WithMockUser
+    @Test
+    void update_post_success() throws Exception {
+
+        // given
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .content("content")
+                .hashtags(List.of("hash1", "hash2"))
+                .build();
+        String body = mapper.writeValueAsString(requestDto);
+
+        // when & then
+        mvc.perform(patch("/v1/posts/1")
+                        .content(body)
+                        .contentType(APPLICATION_JSON)
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                 )
                 .andExpect(status().isOk())
