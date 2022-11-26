@@ -6,6 +6,7 @@ import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.entity.Post;
 import com.example.hunstagram.domain.post.entity.PostRepository;
 import com.example.hunstagram.domain.post.service.PostService;
+import com.example.hunstagram.domain.postimage.entity.PostImage;
 import com.example.hunstagram.domain.postimage.entity.PostImageRepository;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
@@ -26,8 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_NOT_EXIST;
-import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -243,5 +243,72 @@ public class PostServiceTest {
         CustomException e = assertThrows(CustomException.class,
                 () -> postService.createPost(requestDto, List.of()));
         assertThat(e.getErrorCode()).isEqualTo(IMAGE_NOT_EXIST);
+    }
+
+    @DisplayName("post 삭제에 성공한다")
+    @Test
+    void delete_post_success() {
+
+        // given
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        PostImage postImage = new PostImage("test", null);
+        Post post = Post.builder()
+                .id(1L)
+                .postImages(List.of(postImage))
+                .user(user)
+                .build();
+
+        given(postRepository.findByIdWithImageAndUser(any())).willReturn(Optional.of(post));
+        given(jwtService.getId()).willReturn(user.getId());
+
+        // when & then
+        postService.deletePost(post.getId());
+    }
+
+    @DisplayName("post 삭제 시, post가 존재하지 않으면 실패한다")
+    @Test
+    void delete_post_not_found_fail() {
+
+        // given
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        PostImage postImage = new PostImage("test", null);
+        Post post = Post.builder()
+                .id(1L)
+                .postImages(List.of(postImage))
+                .user(user)
+                .build();
+
+        given(postRepository.findByIdWithImageAndUser(any())).willReturn(Optional.of(post));
+        given(jwtService.getId()).willReturn(2L);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.deletePost(post.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_POST);
+    }
+
+    @DisplayName("post 삭제 시, 로그인 한 사용자가 작성한 post가 아니면 실패한다")
+    @Test
+    void delete_not_own_post_fail() {
+
+        // given
+        given(postRepository.findByIdWithImageAndUser(any())).willReturn(Optional.empty());
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.deletePost(1L));
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
     }
 }
