@@ -513,7 +513,7 @@ public class PostServiceIntegrationTest {
 
     @DisplayName("post 수정 시 로그인 한 사용자가 쓴 post가 아니면 실패한다")
     @Test
-    void update_post_not_own_post_fail() {
+    void update_not_own_post_fail() {
 
         // given
         User writer = createUser(1L);
@@ -554,6 +554,106 @@ public class PostServiceIntegrationTest {
         // when & then
         CustomException e = assertThrows(CustomException.class,
                 () -> postService.updatePost(requestDto, post.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_POST);
+    }
+
+    @DisplayName("post 삭제에 성공한다")
+    @Test
+    void delete_post_success() throws IOException {
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .build();
+
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        postService.createPost(requestDto, List.of(image));
+
+        em.flush();
+        em.clear();
+
+        // when & then
+        Post post = postRepository.findAll().get(0);
+        postService.deletePost(post.getId());
+    }
+
+    @DisplayName("post 삭제 시, post가 존재하지 않으면 실패한다")
+    @Test
+    void delete_post_not_found_fail() {
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(user)
+                .thumbnailImage("image")
+                .build();
+        postRepository.save(post);
+
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.deletePost(post.getId() + 1));// 존재하지 않는 postId
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+    }
+
+    @DisplayName("post 삭제 시, 로그인 한 사용자가 작성한 post가 아니면 실패한다")
+    @Test
+    void delete_not_own_post_fail() throws IOException {
+        // given
+        User writer = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(writer);
+        userRepository.save(other);
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .build();
+
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        // SecurityContextHolder에 로그인 정보 저장 (Writer)
+        String accessToken = jwtService.createAccessToken(writer.getEmail(), RoleType.USER, writer.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(writer.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        postService.createPost(requestDto, List.of(image));
+
+        em.flush();
+        em.clear();
+
+        // SecurityContextHolder에 로그인 정보 저장 (Other)
+        String accessTokenOther = jwtService.createAccessToken(other.getEmail(), RoleType.USER, other.getId());
+        List<SimpleGrantedAuthority> authoritiesOther
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authTokenOther = new UsernamePasswordAuthenticationToken(other.getEmail(), accessTokenOther, authoritiesOther);
+        SecurityContextHolder.getContext().setAuthentication(authTokenOther);
+
+        // when & then
+        Post post = postRepository.findAll().get(0);
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.deletePost(post.getId()));
         assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_POST);
     }
 }
