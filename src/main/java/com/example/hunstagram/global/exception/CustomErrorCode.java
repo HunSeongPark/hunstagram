@@ -32,6 +32,7 @@ public enum CustomErrorCode {
 
     // AWS
     IMAGE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
+    IMAGE_DELETE_FAILED(INTERNAL_SERVER_ERROR, "이미지 삭제에 실패했습니다."),
 
     // General
     INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다."),

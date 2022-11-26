@@ -81,4 +81,17 @@ public class PostService {
         hashtagRepository.deleteAll(post.getHashtags());
         post.update(requestDto);
     }
+
+    public void deletePost(Long postId) {
+        Post post = postRepository.findByIdWithImageAndUser(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        Long userId = jwtService.getId();
+
+        // 로그인 한 사용자가 작성한 게시글인지 판단
+        if (!Objects.equals(post.getUser().getId(), userId)) {
+            throw new CustomException(NOT_USER_OWN_POST);
+        }
+        post.getPostImages().forEach(i -> awsS3Service.deleteImage(i.getImageUrl()));
+        postRepository.delete(post);
+    }
 }

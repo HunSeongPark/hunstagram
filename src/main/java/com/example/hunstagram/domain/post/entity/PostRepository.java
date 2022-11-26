@@ -15,4 +15,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "join fetch p.user u " +
             "where p.id = :postId")
     Optional<Post> findByIdWithHashtagAndUser(Long postId);
+
+    @Query("select p from Post p " +
+            "join fetch p.postImages i " +
+            "join fetch p.user u " +
+            "where p.id = :postId")
+    Optional<Post> findByIdWithImageAndUser(Long postId);
 }

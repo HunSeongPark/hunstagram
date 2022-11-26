@@ -1,5 +1,6 @@
 package com.example.hunstagram.global.aws.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -11,8 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
+import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_DELETE_FAILED;
 import static com.example.hunstagram.global.exception.CustomErrorCode.IMAGE_UPLOAD_FAILED;
 
 /**
@@ -46,6 +50,16 @@ public class AwsS3Service {
             return amazonS3.getUrl(bucket, filename).toString();
         } catch (IOException e) {
             throw new CustomException(IMAGE_UPLOAD_FAILED, e);
+        }
+    }
+
+    public void deleteImage(String path) {
+        try {
+            List<String> splitList = Arrays.stream(path.split("/")).toList();
+            String fileName = splitList.get(splitList.size() - 1);
+            amazonS3.deleteObject(bucket, fileName);
+        } catch (AmazonServiceException e) {
+            throw new CustomException(IMAGE_DELETE_FAILED, e);
         }
     }
 }
