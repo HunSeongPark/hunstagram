@@ -3,6 +3,7 @@ package com.example.hunstagram.domain.post.entity;
 import com.example.hunstagram.domain.BaseTimeEntity;
 import com.example.hunstagram.domain.hashtag.entity.Hashtag;
 import com.example.hunstagram.domain.post.dto.PostDto;
+import com.example.hunstagram.domain.postimage.entity.PostImage;
 import com.example.hunstagram.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +48,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(fetch = LAZY, mappedBy = "post", cascade = ALL)
     private List<Hashtag> hashtags;
+
+    @OneToMany(fetch = LAZY, mappedBy = "post", cascade = ALL)
+    private List<PostImage> postImages;
 
     public void update(PostDto.Request requestDto) {
         this.content = requestDto.getContent();
