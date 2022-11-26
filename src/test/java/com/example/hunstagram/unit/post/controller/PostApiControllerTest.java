@@ -27,8 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -107,6 +106,19 @@ public class PostApiControllerTest {
         mvc.perform(patch("/v1/posts/1")
                         .content(body)
                         .contentType(APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("post 삭제에 성공한다")
+    @WithMockUser
+    @Test
+    void delete_post_success() throws Exception {
+
+        // given & when & then
+        mvc.perform(delete("/v1/posts/1")
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                 )
                 .andExpect(status().isOk())
