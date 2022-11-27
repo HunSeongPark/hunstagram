@@ -166,4 +166,26 @@ class UserApiControllerTest {
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
     }
+
+    @DisplayName("내 프로필 조회에 성공한다")
+    @WithMockUser
+    @Test
+    void get_my_profile() throws Exception {
+
+        // given
+        UserDto.MyProfileResponse response = UserDto.MyProfileResponse.builder()
+                .userId(1L)
+                .name("test")
+                .nickname("test")
+                .build();
+        given(userService.getMyProfile()).willReturn(response);
+
+        // when & then
+        mvc.perform(get("/v1/users/my")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.name").value("test"))
+                .andExpect(jsonPath("$.nickname").value("test"));
+    }
 }

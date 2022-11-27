@@ -101,12 +101,12 @@ public class UserService {
     }
 
     public void logout() {
-        User user = getUserFromJWT();
+        User user = getUserFromJwtEmail();
         user.deleteRefreshToken();
     }
 
     public UserDto.MyProfileResponse getMyProfile() {
-        User user = getUserFromJWT();
+        User user = getUserFromJwtEmail();
         List<PostDto.PostThumbnailResponse> postThumbnails =
                 postRepository.findAllByUserId(user.getId())
                         .stream()
@@ -127,8 +127,8 @@ public class UserService {
                 .build();
     }
 
-    private User getUserFromJWT() {
-        return userRepository.findById(jwtService.getId())
+    private User getUserFromJwtEmail() {
+        return userRepository.findByEmail(jwtService.getEmail())
                 .orElseThrow(() -> new CustomException(INVALID_TOKEN));
     }
 
