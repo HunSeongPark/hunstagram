@@ -1,6 +1,9 @@
 package com.example.hunstagram.domain.user.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.hunstagram.domain.follow.entity.FollowRepository;
+import com.example.hunstagram.domain.post.dto.PostDto;
+import com.example.hunstagram.domain.post.entity.PostRepository;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;
@@ -30,6 +34,8 @@ import static com.example.hunstagram.global.type.RoleType.USER;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
     private final AwsS3Service awsS3Service;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -95,9 +101,44 @@ public class UserService {
     }
 
     public void logout() {
-        String email = jwtService.getEmail();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(INVALID_TOKEN));
+        User user = getUserFromJWT();
         user.deleteRefreshToken();
+    }
+
+    public UserDto.MyProfileResponse getMyProfile() {
+        User user = getUserFromJWT();
+        List<PostDto.PostThumbnailResponse> postThumbnails =
+                postRepository.findAllByUserId(user.getId())
+                        .stream()
+                        .map(PostDto.PostThumbnailResponse::fromEntity).toList();
+
+        Integer follower = followRepository.countFolloweeByUserId(user.getId());
+        Integer following = followRepository.countFollowingByUserId(user.getId());
+
+        return UserDto.MyProfileResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .postCount(countFormatting(postThumbnails.size()))
+                .followerCount(countFormatting(follower))
+                .followingCount(countFormatting(following))
+                .postThumbnails(postThumbnails)
+                .build();
+    }
+
+    private User getUserFromJWT() {
+        return userRepository.findById(jwtService.getId())
+                .orElseThrow(() -> new CustomException(INVALID_TOKEN));
+    }
+
+    private String countFormatting(Integer count) {
+        if (count < 1000) {
+            return count.toString();
+        } else if (count < 10000) {
+            return String.format("%.2f", count / 1000.0) + "K";
+        } else {
+            return String.format("%.2f", count / 10000.0) + "M";
+        }
     }
 }

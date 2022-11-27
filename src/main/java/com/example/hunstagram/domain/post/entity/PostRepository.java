@@ -3,6 +3,7 @@ package com.example.hunstagram.domain.post.entity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,4 +22,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "join fetch p.user u " +
             "where p.id = :postId")
     Optional<Post> findByIdWithImageAndUser(Long postId);
+
+    List<Post> findAllByUserId(Long userId);
 }
