@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.user.dto;
 
+import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -86,5 +89,34 @@ public class UserDto {
                     .introText(this.introText)
                     .build();
         }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = PRIVATE)
+    public static class MyProfileResponse {
+        private Long userId;
+        private String nickname;
+        private String name;
+        private String profileImage;
+        private String postCount;
+        private String followerCount;
+        private String followingCount;
+        private List<PostDto.PostThumbnailResponse> postThumbnails;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor(access = PRIVATE)
+    public static class OtherProfileResponse {
+        private Long userId;
+        private String nickname;
+        private String name;
+        private String profileImage;
+        private String postCount;
+        private String followerCount;
+        private String followingCount;
+        private Boolean isFollow;
+        private List<PostDto.PostThumbnailResponse> postThumbnails;
     }
 }
