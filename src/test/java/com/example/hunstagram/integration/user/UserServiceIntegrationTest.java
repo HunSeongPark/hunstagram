@@ -2,6 +2,12 @@ package com.example.hunstagram.integration.user;
 
 import com.auth0.jwt.JWT;
 import com.example.hunstagram.config.AwsS3MockConfig;
+import com.example.hunstagram.domain.follow.entity.Follow;
+import com.example.hunstagram.domain.follow.entity.FollowRepository;
+import com.example.hunstagram.domain.post.entity.Post;
+import com.example.hunstagram.domain.post.entity.PostRepository;
+import com.example.hunstagram.domain.postimage.entity.PostImage;
+import com.example.hunstagram.domain.postimage.entity.PostImageRepository;
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
@@ -57,7 +63,25 @@ public class UserServiceIntegrationTest {
     UserRepository userRepository;
 
     @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    PostImageRepository postImageRepository;
+
+    @Autowired
+    FollowRepository followRepository;
+
+    @Autowired
     EntityManager em;
+
+    private User createUser(Long id) {
+        return User.builder()
+                .email("test" + id + "@test.com")
+                .password("test123!" + id)
+                .name("test" + id)
+                .nickname("test" + id)
+                .build();
+    }
 
     @DisplayName("회원가입을 위한 email, pw 입력에 성공한다")
     @Test
@@ -384,5 +408,100 @@ public class UserServiceIntegrationTest {
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> userService.logout());
         assertThat(e.getErrorCode()).isEqualTo(INVALID_TOKEN);
+    }
+
+    @DisplayName("내 프로필 조회에 성공한다")
+    @Test
+    void get_my_profile_success() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(me)
+                .toUser(other)
+                .build();
+
+        Follow follow2 = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(me)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        // SecurityContextHolder에 accessToken 포함하여 저장
+        String accessToken = jwtService.createAccessToken(me.getEmail(), RoleType.USER, me.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(me.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        // when
+        UserDto.MyProfileResponse response = userService.getMyProfile();
+
+        // then
+        Post findPost = postRepository.findAll().get(0);
+        assertThat(response.getUserId()).isEqualTo(me.getId());
+        assertThat(response.getNickname()).isEqualTo(me.getNickname());
+        assertThat(response.getName()).isEqualTo(me.getName());
+        assertThat(response.getPostThumbnails().get(0).getPostId()).isEqualTo(findPost.getId());
+        assertThat(response.getPostThumbnails().get(0).getImagePath()).isEqualTo(findPost.getThumbnailImage());
+        assertThat(response.getFollowerCount()).isEqualTo("1");
+        assertThat(response.getFollowingCount()).isEqualTo("1");
+    }
+
+    @DisplayName("내 프로필 조회 시, 로그인하지 않으면 실패한다")
+    @Test
+    void get_my_profile_guest_fail() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(me)
+                .toUser(other)
+                .build();
+
+        Follow follow2 = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(me)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        // when & then
+        assertThrows(Exception.class, () -> userService.getMyProfile());
     }
 }
