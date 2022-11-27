@@ -56,4 +56,9 @@ public class UserApiController {
         userService.logout();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<UserDto.MyProfileResponse> getMyProfile() {
+        return ResponseEntity.ok(userService.getMyProfile());
+    }
 }
