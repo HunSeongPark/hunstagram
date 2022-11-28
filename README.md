@@ -6,7 +6,7 @@
   - 도메인 별 Controller, Service 유닛테스트 작성
   - 도메인 별 Service 통합테스트 작성
 - (Swagger) API 명세 작성
-- (AWS S3) 이미지 저장 및 조회
+- (AWS S3) 이미지 저장 및 조회, 삭제(게시글 삭제 시)
 - (Jenkins, Docker, AWC EC2) Docker 사용 컨테이너 배포 및 CI/CD
 - 도메인 연결
 - DTO inner class 처리 등 클린코드에 집중하며 코드 작성
