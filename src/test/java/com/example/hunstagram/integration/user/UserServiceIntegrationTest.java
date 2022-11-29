@@ -37,8 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC256;
-import static com.example.hunstagram.global.exception.CustomErrorCode.EMAIL_ALREADY_EXIST;
-import static com.example.hunstagram.global.exception.CustomErrorCode.INVALID_TOKEN;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static com.example.hunstagram.global.security.service.JwtService.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -503,5 +502,196 @@ public class UserServiceIntegrationTest {
 
         // when & then
         assertThrows(Exception.class, () -> userService.getMyProfile());
+    }
+
+    @DisplayName("사용자 프로필 조회에 성공한다 - accessToken O, 팔로우 O")
+    @Test
+    void get_user_profile_success_with_access_token_follow() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(me)
+                .toUser(other)
+                .build();
+
+        Follow follow2 = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(other)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        String accessToken = jwtService.createAccessToken(me.getEmail(), RoleType.USER, me.getId());
+
+        // when
+        UserDto.OtherProfileResponse response = userService.getProfile(accessToken, other.getId());
+
+        // then
+        Post findPost = postRepository.findAll().get(0);
+        assertThat(response.getUserId()).isEqualTo(other.getId());
+        assertThat(response.getNickname()).isEqualTo(other.getNickname());
+        assertThat(response.getName()).isEqualTo(other.getName());
+        assertThat(response.getPostThumbnails().get(0).getPostId()).isEqualTo(findPost.getId());
+        assertThat(response.getPostThumbnails().get(0).getImagePath()).isEqualTo(findPost.getThumbnailImage());
+        assertThat(response.getFollowerCount()).isEqualTo("1");
+        assertThat(response.getFollowingCount()).isEqualTo("1");
+        assertThat(response.getIsFollow()).isEqualTo(true);
+    }
+
+    @DisplayName("사용자 프로필 조회에 성공한다 - accessToken O, 팔로우 X")
+    @Test
+    void get_user_profile_success_with_access_token_unfollow() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(other)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        String accessToken = jwtService.createAccessToken(me.getEmail(), RoleType.USER, me.getId());
+
+        // when
+        UserDto.OtherProfileResponse response = userService.getProfile(accessToken, other.getId());
+
+        // then
+        Post findPost = postRepository.findAll().get(0);
+        assertThat(response.getUserId()).isEqualTo(other.getId());
+        assertThat(response.getNickname()).isEqualTo(other.getNickname());
+        assertThat(response.getName()).isEqualTo(other.getName());
+        assertThat(response.getPostThumbnails().get(0).getPostId()).isEqualTo(findPost.getId());
+        assertThat(response.getPostThumbnails().get(0).getImagePath()).isEqualTo(findPost.getThumbnailImage());
+        assertThat(response.getFollowerCount()).isEqualTo("0");
+        assertThat(response.getFollowingCount()).isEqualTo("1");
+        assertThat(response.getIsFollow()).isEqualTo(false);
+    }
+
+    @DisplayName("사용자 프로필 조회에 성공한다 - accessToken X")
+    @Test
+    void get_user_profile_success_without_access_token() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(me)
+                .toUser(other)
+                .build();
+
+        Follow follow2 = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(other)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        // when
+        UserDto.OtherProfileResponse response = userService.getProfile(null, other.getId());
+
+        // then
+        Post findPost = postRepository.findAll().get(0);
+        assertThat(response.getUserId()).isEqualTo(other.getId());
+        assertThat(response.getNickname()).isEqualTo(other.getNickname());
+        assertThat(response.getName()).isEqualTo(other.getName());
+        assertThat(response.getPostThumbnails().get(0).getPostId()).isEqualTo(findPost.getId());
+        assertThat(response.getPostThumbnails().get(0).getImagePath()).isEqualTo(findPost.getThumbnailImage());
+        assertThat(response.getFollowerCount()).isEqualTo("1");
+        assertThat(response.getFollowingCount()).isEqualTo("1");
+        assertThat(response.getIsFollow()).isEqualTo(false);
+    }
+
+    @DisplayName("사용자 프로필 조회 시 사용자가 없으면 실패한다")
+    @Test
+    void get_user_profile_user_not_found_fail() {
+
+        // given
+        User me = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(me);
+        userRepository.save(other);
+
+        Follow follow1 = Follow.builder()
+                .fromUser(me)
+                .toUser(other)
+                .build();
+
+        Follow follow2 = Follow.builder()
+                .fromUser(other)
+                .toUser(me)
+                .build();
+        followRepository.save(follow1);
+        followRepository.save(follow2);
+
+        Post post = Post.builder()
+                .content("content")
+                .user(other)
+                .thumbnailImage("test")
+                .build();
+        postRepository.save(post);
+
+        PostImage postImage = new PostImage("test", post);
+        postImageRepository.save(postImage);
+
+        em.flush();
+        em.clear();
+
+        String accessToken = jwtService.createAccessToken(me.getEmail(), RoleType.USER, me.getId());
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> userService.getProfile(accessToken, other.getId() + me.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 }
