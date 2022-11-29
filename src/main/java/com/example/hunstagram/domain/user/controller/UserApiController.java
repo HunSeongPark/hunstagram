@@ -2,6 +2,7 @@ package com.example.hunstagram.domain.user.controller;
 
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.service.UserService;
+import com.example.hunstagram.global.exception.CustomErrorCode;
 import com.example.hunstagram.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,17 @@ public class UserApiController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<UserDto.OtherProfileResponse> getProfile(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getProfile(userId));
+    public ResponseEntity<UserDto.OtherProfileResponse> getProfile(
+            HttpServletRequest request,
+            @PathVariable Long userId
+    ) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String accessToken;
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
+            accessToken = null;
+        } else {
+            accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
+        }
+        return ResponseEntity.ok(userService.getProfile(accessToken, userId));
     }
 }

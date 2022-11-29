@@ -127,6 +127,40 @@ public class UserService {
                 .build();
     }
 
+    public UserDto.OtherProfileResponse getProfile(String accessToken, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        Long loginUserId;
+        if (accessToken == null) {
+            loginUserId = null;
+        } else {
+            DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
+            loginUserId = decodedJWT.getClaim(CLAIM_ID).asLong();
+        }
+
+        List<PostDto.PostThumbnailResponse> postThumbnails =
+                postRepository.findAllByUserId(userId)
+                        .stream()
+                        .map(PostDto.PostThumbnailResponse::fromEntity).toList();
+
+        Integer follower = followRepository.countFolloweeByUserId(userId);
+        Integer following = followRepository.countFollowingByUserId(userId);
+
+        return UserDto.OtherProfileResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .postCount(countFormatting(postThumbnails.size()))
+                .followerCount(countFormatting(follower))
+                .followingCount(countFormatting(following))
+                .postThumbnails(postThumbnails)
+                .isFollow(loginUserId != null && followRepository.isFollow(loginUserId, userId) == 1)
+                .build();
+    }
+
     private User getUserFromJwtEmail() {
         return userRepository.findByEmail(jwtService.getEmail())
                 .orElseThrow(() -> new CustomException(INVALID_TOKEN));

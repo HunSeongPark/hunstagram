@@ -42,7 +42,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return !(
                 pathMatcher.match("/v1/users/logout", path) ||
-                        pathMatcher.match("/v1/users/my", path) ||
+                        pathMatcher.match("/v1/users/profile/my", path) ||
                         pathMatcher.match("/v1/follow/{toUserId:\\d+}", path) ||
                         pathMatcher.match("/v1/posts/**", path)
         );

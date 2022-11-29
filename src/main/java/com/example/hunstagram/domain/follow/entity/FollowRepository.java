@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,4 +29,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     @Query("select count(f) from Follow f where f.fromUser.id = :userId")
     Integer countFollowingByUserId(Long userId);
+
+    @Query("select count(f) from Follow f " +
+            "where f.fromUser.id = :fromUserId " +
+            "and f.toUser.id = :toUserId")
+    Integer isFollow(Long fromUserId, Long toUserId);
 }
