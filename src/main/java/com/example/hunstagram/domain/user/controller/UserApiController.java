@@ -57,8 +57,13 @@ public class UserApiController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/my")
+    @GetMapping("/profile/my")
     public ResponseEntity<UserDto.MyProfileResponse> getMyProfile() {
         return ResponseEntity.ok(userService.getMyProfile());
+    }
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<UserDto.OtherProfileResponse> getProfile(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getProfile(userId));
     }
 }
