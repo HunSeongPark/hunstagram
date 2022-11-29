@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -181,10 +182,81 @@ class UserApiControllerTest {
         given(userService.getMyProfile()).willReturn(response);
 
         // when & then
-        mvc.perform(get("/v1/users/my")
+        mvc.perform(get("/v1/users/profile/my")
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.name").value("test"))
+                .andExpect(jsonPath("$.nickname").value("test"));
+    }
+
+    @DisplayName("유저 프로필 조회에 성공한다 - accessToken X")
+    @WithMockUser
+    @Test
+    void get_user_profile() throws Exception {
+
+        // given
+        UserDto.OtherProfileResponse response = UserDto.OtherProfileResponse.builder()
+                .userId(2L)
+                .name("test")
+                .isFollow(false)
+                .nickname("test")
+                .build();
+        given(userService.getProfile(any(), any())).willReturn(response);
+
+        // when & then
+        mvc.perform(get("/v1/users/profile/2")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(2L))
+                .andExpect(jsonPath("$.name").value("test"))
+                .andExpect(jsonPath("$.nickname").value("test"));
+    }
+
+    @DisplayName("유저 프로필 조회에 성공한다 - bad token header prefix")
+    @WithMockUser
+    @Test
+    void get_user_profile_2_bad_token_header() throws Exception {
+
+        // given
+        UserDto.OtherProfileResponse response = UserDto.OtherProfileResponse.builder()
+                .userId(2L)
+                .name("test")
+                .isFollow(false)
+                .nickname("test")
+                .build();
+        given(userService.getProfile(any(), any())).willReturn(response);
+
+        // when & then
+        mvc.perform(get("/v1/users/profile/2")
+                        .header(AUTHORIZATION, "testAccesstoken123")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(2L))
+                .andExpect(jsonPath("$.name").value("test"))
+                .andExpect(jsonPath("$.nickname").value("test"));
+    }
+
+    @DisplayName("유저 프로필 조회에 성공한다 - accessToken O")
+    @WithMockUser
+    @Test
+    void get_user_profile_with_access_token() throws Exception {
+
+        // given
+        UserDto.OtherProfileResponse response = UserDto.OtherProfileResponse.builder()
+                .userId(2L)
+                .name("test")
+                .isFollow(false)
+                .nickname("test")
+                .build();
+        given(userService.getProfile(any(), any())).willReturn(response);
+
+        // when & then
+        mvc.perform(get("/v1/users/profile/2")
+                        .header(AUTHORIZATION, "Bearer testAccesstoken123")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(2L))
                 .andExpect(jsonPath("$.name").value("test"))
                 .andExpect(jsonPath("$.nickname").value("test"));
     }
