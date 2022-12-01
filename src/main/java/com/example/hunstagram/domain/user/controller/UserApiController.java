@@ -2,7 +2,6 @@ package com.example.hunstagram.domain.user.controller;
 
 import com.example.hunstagram.domain.user.dto.UserDto;
 import com.example.hunstagram.domain.user.service.UserService;
-import com.example.hunstagram.global.exception.CustomErrorCode;
 import com.example.hunstagram.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

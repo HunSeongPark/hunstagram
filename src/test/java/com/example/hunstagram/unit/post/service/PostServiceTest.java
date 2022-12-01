@@ -1,6 +1,5 @@
 package com.example.hunstagram.unit.post.service;
 
-import com.example.hunstagram.domain.hashtag.entity.Hashtag;
 import com.example.hunstagram.domain.hashtag.entity.HashtagRepository;
 import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.entity.Post;
