@@ -11,6 +11,7 @@
 - 도메인 연결
 - DTO inner class 처리 등 클린코드에 집중하며 코드 작성
 - 불필요한 Lombok Annotation 사용 X 필수적인 Annotation만 사용!
+- (Redis) Caching
 
 ## ERD
 <img width="1039" alt="image" src="https://user-images.githubusercontent.com/71416677/201517254-9b72c7bc-1cf1-454a-99e9-b0bf190a96cd.png">
