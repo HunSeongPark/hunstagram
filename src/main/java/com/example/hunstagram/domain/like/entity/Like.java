@@ -4,6 +4,8 @@ import com.example.hunstagram.domain.BaseTimeEntity;
 import com.example.hunstagram.domain.comment.entity.Comment;
 import com.example.hunstagram.domain.post.entity.Post;
 import com.example.hunstagram.domain.user.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 /**
@@ -18,6 +21,8 @@ import static lombok.AccessLevel.PROTECTED;
  * @date : 2022-11-08
  */
 @Getter
+@Builder
+@AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "likes")
 @Entity

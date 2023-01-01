@@ -2,6 +2,9 @@ package com.example.hunstagram.domain.post.service;
 
 import com.example.hunstagram.domain.hashtag.entity.Hashtag;
 import com.example.hunstagram.domain.hashtag.entity.HashtagRepository;
+import com.example.hunstagram.domain.like.dto.LikeDto;
+import com.example.hunstagram.domain.like.entity.Like;
+import com.example.hunstagram.domain.like.entity.LikeRepository;
 import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.entity.Post;
 import com.example.hunstagram.domain.post.entity.PostRepository;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 
@@ -37,6 +41,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final HashtagRepository hashtagRepository;
     private final PostImageRepository postImageRepository;
+    private final LikeRepository likeRepository;
 
     public void createPost(PostDto.Request requestDto, List<MultipartFile> images) {
         if (images == null || images.isEmpty()) {
@@ -93,5 +98,27 @@ public class PostService {
         }
         post.getPostImages().forEach(i -> awsS3Service.deleteImage(i.getImageUrl()));
         postRepository.delete(post);
+    }
+
+    public LikeDto.Response like(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        User user = userRepository.findById(jwtService.getId())
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Optional<Like> like = likeRepository.findByPostAndUserId(post.getId(), user.getId());
+
+        // 좋아요 취소
+        if (like.isPresent()) {
+            likeRepository.delete(like.get());
+            return new LikeDto.Response(false);
+        } else {
+            // 좋아요 추가
+            Like newLike = Like.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+            likeRepository.save(newLike);
+            return new LikeDto.Response(true);
+        }
     }
 }
