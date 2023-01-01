@@ -1,5 +1,6 @@
 package com.example.hunstagram.domain.post.controller;
 
+import com.example.hunstagram.domain.like.dto.LikeDto;
 import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,10 @@ public class PostApiController {
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<LikeDto.Response> postLike(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.like());
     }
 }
