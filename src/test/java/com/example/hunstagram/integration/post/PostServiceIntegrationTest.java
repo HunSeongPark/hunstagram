@@ -3,6 +3,8 @@ package com.example.hunstagram.integration.post;
 import com.example.hunstagram.config.AwsS3MockConfig;
 import com.example.hunstagram.domain.hashtag.entity.Hashtag;
 import com.example.hunstagram.domain.hashtag.entity.HashtagRepository;
+import com.example.hunstagram.domain.like.dto.LikeDto;
+import com.example.hunstagram.domain.like.entity.LikeRepository;
 import com.example.hunstagram.domain.post.dto.PostDto;
 import com.example.hunstagram.domain.post.entity.Post;
 import com.example.hunstagram.domain.post.entity.PostRepository;
@@ -61,6 +63,9 @@ public class PostServiceIntegrationTest {
 
     @Autowired
     HashtagRepository hashtagRepository;
+
+    @Autowired
+    LikeRepository likeRepository;
 
     @Autowired
     EntityManager em;
@@ -655,5 +660,111 @@ public class PostServiceIntegrationTest {
         CustomException e = assertThrows(CustomException.class,
                 () -> postService.deletePost(post.getId()));
         assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_POST);
+    }
+
+    @DisplayName("post 좋아요에 성공한다 - 추가 / 취소")
+    @Test
+    void add_and_cancel_like_post_success() throws IOException {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .build();
+
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        postService.createPost(requestDto, List.of(image));
+
+        em.flush();
+        em.clear();
+
+        // when & then - add
+        LikeDto.Response response = postService.like(postRepository.findAll().get(0).getId());
+        assertThat(response.getIsLikeAdd()).isTrue();
+        assertThat(likeRepository.findAll().size()).isEqualTo(1);
+
+        // when & then - cancel
+        LikeDto.Response response2 = postService.like(postRepository.findAll().get(0).getId());
+        assertThat(response2.getIsLikeAdd()).isFalse();
+        assertThat(likeRepository.findAll().size()).isEqualTo(0);
+    }
+
+    @DisplayName("post 좋아요 시 게시글이 존재하지 않으면 실패한다")
+    @Test
+    void like_post_not_found_fail() {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        em.flush();
+        em.clear();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> postService.like(1L));
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+    }
+
+    @DisplayName("post 좋아요 시 사용자가 존재하지 않으면 실패한다")
+    @Test
+    void like_post_user_not_found_fail() throws IOException {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+
+        PostDto.Request requestDto = PostDto.Request.builder()
+                .build();
+
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        // SecurityContextHolder에 로그인 정보 저장
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        postService.createPost(requestDto, List.of(image));
+
+        em.flush();
+        em.clear();
+
+        // 로그인 정보 변경
+        String accessToken2 = jwtService.createAccessToken("testa@testa.com", RoleType.USER, 3L);
+        List<SimpleGrantedAuthority> authorities2
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken2 = new UsernamePasswordAuthenticationToken(
+                "testa@testa.com", accessToken2, authorities2);
+        SecurityContextHolder.getContext().setAuthentication(authToken2);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class,
+                () -> postService.like(postRepository.findAll().get(0).getId()));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 }
