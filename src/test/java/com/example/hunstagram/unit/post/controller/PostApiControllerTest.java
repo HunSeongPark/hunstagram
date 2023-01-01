@@ -123,4 +123,17 @@ public class PostApiControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @DisplayName("post 좋아요에 성공한다")
+    @WithMockUser
+    @Test
+    void like_post_success() throws Exception {
+
+        // given & when & then
+        mvc.perform(post("/v1/posts/1/like")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }
