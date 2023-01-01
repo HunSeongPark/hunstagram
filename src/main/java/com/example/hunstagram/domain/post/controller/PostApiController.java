@@ -20,6 +20,13 @@ public class PostApiController {
 
     private final PostService postService;
 
+    // TODO 특정 게시글 조회
+//    @GetMapping("/{postId}")
+//    public ResponseEntity<Void> getPost(@PathVariable Long postId) {
+//        postService.updatePost(requestDto, postId);
+//        return ResponseEntity.ok().build();
+//    }
+
     @PostMapping
     public ResponseEntity<Void> createPost(
             @RequestPart(value = "data", required = false) PostDto.Request requestDto,
