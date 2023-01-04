@@ -79,6 +79,14 @@ public class PostServiceIntegrationTest {
                 .build();
     }
 
+    private void loginUser(User user) {
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
     @DisplayName("post 등록에 성공한다 (content, hashtag 존재)")
     @Test
     void create_post_success_with_content_hashtag() throws IOException {
@@ -87,12 +95,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String content = "content";
         ArrayList<String> hashtags = new ArrayList<>();
@@ -131,12 +134,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String content = "content";
         PostDto.Request requestDto = PostDto.Request.builder()
@@ -169,12 +167,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         ArrayList<String> hashtags = new ArrayList<>();
         hashtags.add("hash1");
@@ -211,12 +204,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String fileName = "tet";
         String contentType = "image/png";
@@ -241,15 +229,15 @@ public class PostServiceIntegrationTest {
     void create_post_user_not_found_fail() throws IOException {
 
         // given
-        User user = createUser(1L);
-        // * User 저장 X
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test123!")
+                .name("test")
+                .nickname("test")
+                .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, 1L);
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String content = "content";
         ArrayList<String> hashtags = new ArrayList<>();
@@ -280,12 +268,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String content = "content";
         ArrayList<String> hashtags = new ArrayList<>();
@@ -310,12 +293,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         String content = "content";
         ArrayList<String> hashtags = new ArrayList<>();
@@ -363,12 +341,7 @@ public class PostServiceIntegrationTest {
                 .hashtags(changedHashtags)
                 .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         // when
         postService.updatePost(requestDto, post.getId());
@@ -412,12 +385,7 @@ public class PostServiceIntegrationTest {
                 .hashtags(Stream.of(hash1, hash2).map(Hashtag::getHashtag).toList()) // 기존 Hashtag 그대로
                 .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         // when
         postService.updatePost(requestDto, post.getId());
@@ -460,12 +428,7 @@ public class PostServiceIntegrationTest {
                 .hashtags(changedHashtags)
                 .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         // when
         postService.updatePost(requestDto, post.getId());
@@ -549,12 +512,7 @@ public class PostServiceIntegrationTest {
                 .hashtags(changedHashtags)
                 .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(other.getEmail(), RoleType.USER, other.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(other.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(other);
 
         // when & then
         CustomException e = assertThrows(CustomException.class,
@@ -578,12 +536,7 @@ public class PostServiceIntegrationTest {
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         postService.createPost(requestDto, List.of(image));
 
@@ -636,24 +589,14 @@ public class PostServiceIntegrationTest {
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장 (Writer)
-        String accessToken = jwtService.createAccessToken(writer.getEmail(), RoleType.USER, writer.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(writer.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(writer);
 
         postService.createPost(requestDto, List.of(image));
 
         em.flush();
         em.clear();
 
-        // SecurityContextHolder에 로그인 정보 저장 (Other)
-        String accessTokenOther = jwtService.createAccessToken(other.getEmail(), RoleType.USER, other.getId());
-        List<SimpleGrantedAuthority> authoritiesOther
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authTokenOther = new UsernamePasswordAuthenticationToken(other.getEmail(), accessTokenOther, authoritiesOther);
-        SecurityContextHolder.getContext().setAuthentication(authTokenOther);
+        loginUser(other);
 
         // when & then
         Post post = postRepository.findAll().get(0);
@@ -679,12 +622,7 @@ public class PostServiceIntegrationTest {
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         postService.createPost(requestDto, List.of(image));
 
@@ -710,12 +648,7 @@ public class PostServiceIntegrationTest {
         User user = createUser(1L);
         userRepository.save(user);
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         em.flush();
         em.clear();
@@ -742,12 +675,7 @@ public class PostServiceIntegrationTest {
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         postService.createPost(requestDto, List.of(image));
 
@@ -755,12 +683,14 @@ public class PostServiceIntegrationTest {
         em.clear();
 
         // 로그인 정보 변경
-        String accessToken2 = jwtService.createAccessToken("testa@testa.com", RoleType.USER, 3L);
-        List<SimpleGrantedAuthority> authorities2
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken2 = new UsernamePasswordAuthenticationToken(
-                "testa@testa.com", accessToken2, authorities2);
-        SecurityContextHolder.getContext().setAuthentication(authToken2);
+        User user2 = User.builder()
+                .id(2L)
+                .email("test@test.com")
+                .password("test123!")
+                .name("test2")
+                .nickname("test2")
+                .build();
+        loginUser(user2);
 
         // when & then
         CustomException e = assertThrows(CustomException.class,
