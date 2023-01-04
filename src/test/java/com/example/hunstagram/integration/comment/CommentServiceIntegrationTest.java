@@ -79,6 +79,14 @@ public class CommentServiceIntegrationTest {
                 .build();
     }
 
+    private void loginUser(User user) {
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
     @DisplayName("comment 좋아요에 성공한다 - 추가 / 취소")
     @Test
     void add_and_cancel_like_comment_success() throws IOException {
@@ -86,22 +94,15 @@ public class CommentServiceIntegrationTest {
         // given
         User user = createUser(1L);
         userRepository.save(user);
-
         PostDto.Request requestDto = PostDto.Request.builder()
                 .build();
-
         String fileName = "tet";
         String contentType = "image/png";
         String filePath = "src/test/resources/img/tet.png";
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         postService.createPost(requestDto, List.of(image));
         Post post = postRepository.findAll().get(0);
@@ -139,12 +140,7 @@ public class CommentServiceIntegrationTest {
         PostDto.Request requestDto = PostDto.Request.builder()
                 .build();
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         em.flush();
         em.clear();
@@ -171,12 +167,7 @@ public class CommentServiceIntegrationTest {
         MockMultipartFile image
                 = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
 
-        // SecurityContextHolder에 로그인 정보 저장
-        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(user);
 
         postService.createPost(requestDto, List.of(image));
         Post post = postRepository.findAll().get(0);
@@ -190,12 +181,14 @@ public class CommentServiceIntegrationTest {
         commentRepository.save(comment);
 
         // 로그인 정보 변경
-        String accessToken2 = jwtService.createAccessToken("testa@testa.com", RoleType.USER, 3L);
-        List<SimpleGrantedAuthority> authorities2
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        Authentication authToken2 = new UsernamePasswordAuthenticationToken(
-                "testa@testa.com", accessToken2, authorities2);
-        SecurityContextHolder.getContext().setAuthentication(authToken2);
+        User user2 = User.builder()
+                .id(2L)
+                .email("test2@test.com")
+                .password("test123!")
+                .name("test2")
+                .nickname("test2")
+                .build();
+        loginUser(user2);
 
         em.flush();
         em.clear();

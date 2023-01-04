@@ -59,6 +59,14 @@ public class FollowServiceIntegrationTest {
                 .build();
     }
 
+    private void loginUser(User user) {
+        String accessToken = jwtService.createAccessToken(user.getEmail(), RoleType.USER, user.getId());
+        List<SimpleGrantedAuthority> authorities
+                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+        Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
     @DisplayName("follow 추가에 성공한다")
     @Test
     void follow_add_success() {
@@ -69,12 +77,7 @@ public class FollowServiceIntegrationTest {
         userRepository.save(fromUser);
         userRepository.save(toUser);
 
-        // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, fromUser.getId());
-        Authentication authToken = new UsernamePasswordAuthenticationToken(fromUser.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(fromUser);
 
         // when
         FollowDto.Response response = followService.follow(toUser.getId());
@@ -92,18 +95,19 @@ public class FollowServiceIntegrationTest {
     void follow_add_from_user_not_found_fail() {
 
         // given
-        User fromUser = createUser(1L);
+        User fromUser = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test123!")
+                .name("test")
+                .nickname("test")
+                .build();
         User toUser = createUser(2L);
 
         // ! fromUser 테이블에 저장 X
         userRepository.save(toUser);
 
-        // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, 1L);
-        Authentication authToken = new UsernamePasswordAuthenticationToken(fromUser.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(fromUser);
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> followService.follow(toUser.getId()));
@@ -121,12 +125,7 @@ public class FollowServiceIntegrationTest {
         userRepository.save(fromUser);
         // ! toUser 테이블에 저장 X
 
-        // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, fromUser.getId());
-        Authentication authToken = new UsernamePasswordAuthenticationToken(fromUser.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(fromUser);
 
         // when & then
         CustomException e = assertThrows(CustomException.class, () -> followService.follow(2L));
@@ -149,12 +148,7 @@ public class FollowServiceIntegrationTest {
                 .build();
         followRepository.save(saveFollow);
 
-        // SecurityContextHolder에 accessToken 포함하여 저장
-        List<SimpleGrantedAuthority> authorities
-                = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
-        String accessToken = jwtService.createAccessToken(fromUser.getEmail(), RoleType.USER, fromUser.getId());
-        Authentication authToken = new UsernamePasswordAuthenticationToken(fromUser.getEmail(), accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        loginUser(fromUser);
 
         // when
         FollowDto.Response response = followService.follow(toUser.getId());
