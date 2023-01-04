@@ -17,7 +17,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findByPostAndUserId(Long postId, Long userId);
 
     @Query("select l from Like l " +
-            "where l.post.id = :postId " +
+            "where l.comment.id = :commentId " +
             "and l.user.id = :userId")
-    Optional<Like> findByCommentAndUserId(Long postId, Long userId);
+    Optional<Like> findByCommentAndUserId(Long commentId, Long userId);
 }
