@@ -56,4 +56,17 @@ public class CommentService {
             return new LikeDto.Response(true);
         }
     }
+
+    public void addComment(CommentDto.Request requestDto) {
+        Post post = postRepository.findById(requestDto.getPostId())
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        User user = userRepository.findById(jwtService.getId())
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Comment comment = Comment.builder()
+                .post(post)
+                .user(user)
+                .content(requestDto.getContent())
+                .build();
+        commentRepository.save(comment);
+    }
 }
