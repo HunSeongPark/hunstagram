@@ -684,7 +684,7 @@ public class PostServiceIntegrationTest {
 
         // 로그인 정보 변경
         User user2 = User.builder()
-                .id(2L)
+                .id(user.getId() + 10)
                 .email("test@test.com")
                 .password("test123!")
                 .name("test2")
