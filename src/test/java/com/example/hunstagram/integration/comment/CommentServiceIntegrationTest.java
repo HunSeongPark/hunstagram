@@ -1,5 +1,6 @@
 package com.example.hunstagram.integration.comment;
 
+import com.example.hunstagram.domain.comment.dto.CommentDto;
 import com.example.hunstagram.domain.comment.entity.Comment;
 import com.example.hunstagram.domain.comment.entity.CommentRepository;
 import com.example.hunstagram.domain.comment.service.CommentService;
@@ -32,8 +33,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.COMMENT_NOT_FOUND;
-import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -85,6 +85,95 @@ public class CommentServiceIntegrationTest {
                 = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
         Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
         SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    @DisplayName("comment 등록에 성공한다")
+    @Test
+    void create_comment_success() throws IOException {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+        PostDto.Request postRequestDto = PostDto.Request.builder()
+                .build();
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        loginUser(user);
+
+        postService.createPost(postRequestDto, List.of(image));
+        Post post = postRepository.findAll().get(0);
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("test")
+                .build();
+
+        em.flush();
+        em.clear();
+
+        // when
+        commentService.addComment(requestDto);
+
+        // then
+        Comment comment = commentRepository.findAll().get(0);
+        assertThat(comment.getContent()).isEqualTo(requestDto.getContent());
+    }
+
+    @DisplayName("comment 등록 시 관련 게시글이 존재하지 않으면 실패한다")
+    @Test
+    void create_comment_post_not_found_fail() {
+
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(1L)
+                .content("test")
+                .build();
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+    }
+
+    @DisplayName("comment 등록 시 사용자가 존재하지 않으면 실패한다")
+    @Test
+    void create_comment_user_not_found_fail() throws IOException {
+        User user = createUser(1L);
+        userRepository.save(user);
+        PostDto.Request postRequestDto = PostDto.Request.builder()
+                .build();
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        loginUser(user);
+
+        postService.createPost(postRequestDto, List.of(image));
+        Post post = postRepository.findAll().get(0);
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("test")
+                .build();
+
+        em.flush();
+        em.clear();
+
+        // 로그인 정보 변경
+        User user2 = User.builder()
+                .id(user.getId() + 10)
+                .email("test2@test.com")
+                .password("test123!")
+                .name("test2")
+                .nickname("test2")
+                .build();
+        loginUser(user2);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
     @DisplayName("comment 좋아요에 성공한다 - 추가 / 취소")
@@ -152,7 +241,7 @@ public class CommentServiceIntegrationTest {
 
     @DisplayName("comment 좋아요 시 사용자가 존재하지 않으면 실패한다")
     @Test
-    void like_post_user_not_found_fail() throws IOException {
+    void like_comment_user_not_found_fail() throws IOException {
 
         // given
         User user = createUser(1L);
@@ -182,7 +271,7 @@ public class CommentServiceIntegrationTest {
 
         // 로그인 정보 변경
         User user2 = User.builder()
-                .id(2L)
+                .id(user.getId() + 10)
                 .email("test2@test.com")
                 .password("test123!")
                 .name("test2")
