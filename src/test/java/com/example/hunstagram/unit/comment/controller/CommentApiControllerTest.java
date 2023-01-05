@@ -1,6 +1,7 @@
 package com.example.hunstagram.unit.comment.controller;
 
 import com.example.hunstagram.domain.comment.controller.CommentApiController;
+import com.example.hunstagram.domain.comment.dto.CommentDto;
 import com.example.hunstagram.domain.comment.service.CommentService;
 import com.example.hunstagram.domain.post.service.PostService;
 import com.example.hunstagram.domain.user.entity.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,6 +51,28 @@ public class CommentApiControllerTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @DisplayName("comment 등록에 성공한다")
+    @WithMockUser
+    @Test
+    void create_comment_success() throws Exception {
+
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(1L)
+                .content("test")
+                .build();
+
+        String body = mapper.writeValueAsString(requestDto);
+
+        // given & when & then
+        mvc.perform(post("/v1/comments")
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
     @DisplayName("comment 좋아요에 성공한다")
     @WithMockUser
