@@ -1,11 +1,13 @@
 package com.example.hunstagram.domain.comment.service;
 
+import com.example.hunstagram.domain.comment.dto.CommentDto;
 import com.example.hunstagram.domain.comment.entity.Comment;
 import com.example.hunstagram.domain.comment.entity.CommentRepository;
 import com.example.hunstagram.domain.like.dto.LikeDto;
 import com.example.hunstagram.domain.like.entity.Like;
 import com.example.hunstagram.domain.like.entity.LikeRepository;
 import com.example.hunstagram.domain.post.entity.Post;
+import com.example.hunstagram.domain.post.entity.PostRepository;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.global.exception.CustomException;
@@ -31,6 +33,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
 
     public LikeDto.Response like(Long commentId) {
         Comment comment = commentRepository.findById(commentId)

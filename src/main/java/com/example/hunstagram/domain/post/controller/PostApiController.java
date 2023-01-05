@@ -53,7 +53,7 @@ public class PostApiController {
     }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<LikeDto.Response> postLike(@PathVariable Long postId) {
+    public ResponseEntity<LikeDto.Response> likePost(@PathVariable Long postId) {
         return ResponseEntity.ok(postService.like(postId));
     }
 }
