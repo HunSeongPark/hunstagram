@@ -39,13 +39,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
+        request.getMethod();
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return !(
                 pathMatcher.match("/v1/users/logout", path) ||
                         pathMatcher.match("/v1/users/profile/my", path) ||
                         pathMatcher.match("/v1/follow/{toUserId:\\d+}", path) ||
                         pathMatcher.match("/v1/posts/**/like", path) ||
-                        pathMatcher.match("/v1/comments/**/like", path)
+                        (pathMatcher.match("/v1/posts/**", path) && request.getMethod().equals("POST")) ||
+                        pathMatcher.match("/v1/comments/**/like", path) ||
+                        (pathMatcher.match("/v1/comments/**", path) && request.getMethod().equals("POST"))
         );
     }
 
