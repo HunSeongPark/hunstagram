@@ -1,11 +1,14 @@
 package com.example.hunstagram.unit.comment.service;
 
+import com.example.hunstagram.domain.comment.dto.CommentDto;
 import com.example.hunstagram.domain.comment.entity.Comment;
 import com.example.hunstagram.domain.comment.entity.CommentRepository;
 import com.example.hunstagram.domain.comment.service.CommentService;
 import com.example.hunstagram.domain.like.dto.LikeDto;
 import com.example.hunstagram.domain.like.entity.Like;
 import com.example.hunstagram.domain.like.entity.LikeRepository;
+import com.example.hunstagram.domain.post.entity.Post;
+import com.example.hunstagram.domain.post.entity.PostRepository;
 import com.example.hunstagram.domain.user.entity.User;
 import com.example.hunstagram.domain.user.entity.UserRepository;
 import com.example.hunstagram.global.exception.CustomException;
@@ -19,8 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.example.hunstagram.global.exception.CustomErrorCode.COMMENT_NOT_FOUND;
-import static com.example.hunstagram.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.example.hunstagram.global.exception.CustomErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +49,73 @@ public class CommentServiceTest {
 
     @Mock
     LikeRepository likeRepository;
+
+    @Mock
+    PostRepository postRepository;
+
+    @DisplayName("comment 등록에 성공한다")
+    @Test
+    void create_comment_success() {
+
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .content("test")
+                .build();
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("content")
+                .build();
+        given(postRepository.findById(any())).willReturn(Optional.of(post));
+        given(userRepository.findById(any())).willReturn(Optional.of(user));
+
+        // when & then
+        commentService.addComment(requestDto);
+    }
+
+    @DisplayName("comment 등록 시 관련 게시글이 존재하지 않으면 실패한다")
+    @Test
+    void create_comment_post_not_found_fail() {
+
+        // given
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(1L)
+                .content("content")
+                .build();
+        given(postRepository.findById(any())).willReturn(Optional.empty());
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
+    }
+
+    @DisplayName("comment 등록 시 사용자가 존재하지 않으면 실패한다")
+    @Test
+    void create_comment_user_not_found_fail() {
+
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .content("test")
+                .build();
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("content")
+                .build();
+        given(postRepository.findById(any())).willReturn(Optional.of(post));
+        given(userRepository.findById(any())).willReturn(Optional.empty());
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
+    }
 
     @DisplayName("comment 좋아요에 성공한다 - 추가")
     @Test
