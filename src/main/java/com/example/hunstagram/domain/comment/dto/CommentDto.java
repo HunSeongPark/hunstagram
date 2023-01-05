@@ -1,5 +1,8 @@
 package com.example.hunstagram.domain.comment.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -10,6 +13,8 @@ import java.time.LocalDateTime;
  */
 public class CommentDto {
 
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static class Request {
         private Long postId;
