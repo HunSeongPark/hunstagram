@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.example.hunstagram.global.exception.CustomErrorCode.*;
@@ -34,6 +35,31 @@ public class CommentService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
+
+    public void createComment(CommentDto.Request requestDto) {
+        Post post = postRepository.findById(requestDto.getPostId())
+                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
+        User user = userRepository.findById(jwtService.getId())
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        Comment comment = Comment.builder()
+                .post(post)
+                .user(user)
+                .content(requestDto.getContent())
+                .build();
+        commentRepository.save(comment);
+    }
+
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findByIdWithUser(commentId)
+                .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+        Long userId = jwtService.getId();
+
+        // 로그인 한 사용자가 작성한 댓글인지 판단
+        if (!Objects.equals(comment.getUser().getId(), userId)) {
+            throw new CustomException(NOT_USER_OWN_COMMENT);
+        }
+        commentRepository.delete(comment);
+    }
 
     public LikeDto.Response like(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
@@ -55,18 +81,5 @@ public class CommentService {
             likeRepository.save(newLike);
             return new LikeDto.Response(true);
         }
-    }
-
-    public void createComment(CommentDto.Request requestDto) {
-        Post post = postRepository.findById(requestDto.getPostId())
-                .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
-        User user = userRepository.findById(jwtService.getId())
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-        Comment comment = Comment.builder()
-                .post(post)
-                .user(user)
-                .content(requestDto.getContent())
-                .build();
-        commentRepository.save(comment);
     }
 }

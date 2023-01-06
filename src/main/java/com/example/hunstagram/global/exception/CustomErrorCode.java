@@ -22,10 +22,11 @@ public enum CustomErrorCode {
     // Post
     IMAGE_NOT_EXIST(BAD_REQUEST, "게시글 이미지가 존재하지 않습니다."),
     POST_NOT_FOUND(NOT_FOUND, "게시글을 찾을 수 없습니다."),
-    NOT_USER_OWN_POST(BAD_REQUEST, "본인이 작성한 게시글만 수정이 가능합니다."),
+    NOT_USER_OWN_POST(BAD_REQUEST, "본인이 작성한 게시글만 수정, 삭제가 가능합니다."),
 
     // Comment
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    NOT_USER_OWN_COMMENT(BAD_REQUEST, "본인이 작성한 댓글만 수정, 삭제가 가능합니다."),
 
     // JWT
     TOKEN_NOT_EXIST(BAD_REQUEST, "JWT Token이 존재하지 않습니다."),
