@@ -176,6 +176,93 @@ public class CommentServiceIntegrationTest {
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
+    @DisplayName("comment 삭제에 성공한다")
+    @Test
+    void delete_comment_success() throws IOException {
+
+        // given
+        User user = createUser(1L);
+        userRepository.save(user);
+        PostDto.Request postRequestDto = PostDto.Request.builder()
+                .build();
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        loginUser(user);
+
+        postService.createPost(postRequestDto, List.of(image));
+        Post post = postRepository.findAll().get(0);
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("test")
+                .build();
+        commentService.createComment(requestDto);
+
+        em.flush();
+        em.clear();
+
+        Comment comment = commentRepository.findAll().get(0);
+
+        // when
+        commentService.deleteComment(comment.getId());
+
+        // then
+        assertThat(commentRepository.findAll().isEmpty()).isTrue();
+    }
+
+    @DisplayName("comment 삭제 시 댓글이 존재하지 않으면 실패한다")
+    @Test
+    void delete_comment_not_found_fail() {
+
+        // given & when & then
+        assertThat(commentRepository.findAll().isEmpty()).isTrue();
+        CustomException e = assertThrows(CustomException.class, () -> commentService.deleteComment(1L));
+        assertThat(e.getErrorCode()).isEqualTo(COMMENT_NOT_FOUND);
+    }
+
+    @DisplayName("comment 삭제 시 사용자가 작성한 댓글이 아니면 실패한다")
+    @Test
+    void delete_not_own_comment_fail() throws IOException {
+
+        // given
+        User writer = createUser(1L);
+        User other = createUser(2L);
+        userRepository.save(writer);
+        userRepository.save(other);
+        PostDto.Request postRequestDto = PostDto.Request.builder()
+                .build();
+        String fileName = "tet";
+        String contentType = "image/png";
+        String filePath = "src/test/resources/img/tet.png";
+        MockMultipartFile image
+                = new MockMultipartFile("images", fileName, contentType, new FileInputStream(filePath));
+
+        loginUser(writer);
+
+        postService.createPost(postRequestDto, List.of(image));
+        Post post = postRepository.findAll().get(0);
+        CommentDto.Request requestDto = CommentDto.Request.builder()
+                .postId(post.getId())
+                .content("test")
+                .build();
+        commentService.createComment(requestDto);
+
+        em.flush();
+        em.clear();
+
+        // 로그인 정보 변경
+        loginUser(other);
+
+        Comment comment = commentRepository.findAll().get(0);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.deleteComment(comment.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_COMMENT);
+    }
+
     @DisplayName("comment 좋아요에 성공한다 - 추가 / 취소")
     @Test
     void add_and_cancel_like_comment_success() throws IOException {
