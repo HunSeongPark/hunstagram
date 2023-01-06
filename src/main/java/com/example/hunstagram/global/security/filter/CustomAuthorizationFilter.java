@@ -47,8 +47,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                         pathMatcher.match("/v1/follow/{toUserId:\\d+}", path) ||
                         pathMatcher.match("/v1/posts/**/like", path) ||
                         (pathMatcher.match("/v1/posts/**", path) && request.getMethod().equals("POST")) ||
+                        (pathMatcher.match("/v1/posts/**", path) && request.getMethod().equals("DELETE")) ||
                         pathMatcher.match("/v1/comments/**/like", path) ||
-                        (pathMatcher.match("/v1/comments/**", path) && request.getMethod().equals("POST"))
+                        (pathMatcher.match("/v1/comments/**", path) && request.getMethod().equals("POST")) ||
+                        (pathMatcher.match("/v1/comments/**", path) && request.getMethod().equals("DELETE"))
         );
     }
 
