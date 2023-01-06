@@ -77,7 +77,7 @@ public class CommentServiceTest {
         given(userRepository.findById(any())).willReturn(Optional.of(user));
 
         // when & then
-        commentService.addComment(requestDto);
+        commentService.createComment(requestDto);
     }
 
     @DisplayName("comment 등록 시 관련 게시글이 존재하지 않으면 실패한다")
@@ -92,7 +92,7 @@ public class CommentServiceTest {
         given(postRepository.findById(any())).willReturn(Optional.empty());
 
         // when & then
-        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        CustomException e = assertThrows(CustomException.class, () -> commentService.createComment(requestDto));
         assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
     }
 
@@ -113,7 +113,7 @@ public class CommentServiceTest {
         given(userRepository.findById(any())).willReturn(Optional.empty());
 
         // when & then
-        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        CustomException e = assertThrows(CustomException.class, () -> commentService.createComment(requestDto));
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
