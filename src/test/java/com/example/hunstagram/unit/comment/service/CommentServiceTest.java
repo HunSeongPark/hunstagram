@@ -117,6 +117,79 @@ public class CommentServiceTest {
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
+    @DisplayName("comment 삭제에 성공한다")
+    @Test
+    void delete_comment_success() {
+
+        // given
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        Comment comment = Comment.builder()
+                .id(1L)
+                .content("test")
+                .user(user)
+                .build();
+        given(commentRepository.findByIdWithUser(any())).willReturn(Optional.of(comment));
+        given(jwtService.getId()).willReturn(user.getId());
+
+        // when & then
+        commentService.deleteComment(comment.getId());
+    }
+
+    @DisplayName("comment 삭제 시 댓글이 존재하지 않으면 실패한다")
+    @Test
+    void delete_comment_not_found_fail() {
+
+        // given
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        Comment comment = Comment.builder()
+                .id(1L)
+                .content("test")
+                .user(user)
+                .build();
+        given(commentRepository.findByIdWithUser(any())).willReturn(Optional.empty());
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.deleteComment(2L));
+        assertThat(e.getErrorCode()).isEqualTo(COMMENT_NOT_FOUND);
+    }
+
+    @DisplayName("comment 삭제 시 사용자가 작성한 댓글이 아니면 실패한다")
+    @Test
+    void delete_not_own_comment_fail() {
+
+        // given
+        User user = User.builder()
+                .id(1L)
+                .email("test@test.com")
+                .password("test12345!")
+                .name("test")
+                .nickname("test")
+                .build();
+        Comment comment = Comment.builder()
+                .id(1L)
+                .content("test")
+                .user(user)
+                .build();
+        given(commentRepository.findByIdWithUser(any())).willReturn(Optional.of(comment));
+        given(jwtService.getId()).willReturn(2L);
+
+        // when & then
+        CustomException e = assertThrows(CustomException.class, () -> commentService.deleteComment(comment.getId()));
+        assertThat(e.getErrorCode()).isEqualTo(NOT_USER_OWN_COMMENT);
+    }
+
     @DisplayName("comment 좋아요에 성공한다 - 추가")
     @Test
     void add_like_comment_success() {
