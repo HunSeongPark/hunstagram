@@ -57,7 +57,7 @@ public class CommentService {
         }
     }
 
-    public void addComment(CommentDto.Request requestDto) {
+    public void createComment(CommentDto.Request requestDto) {
         Post post = postRepository.findById(requestDto.getPostId())
                 .orElseThrow(() -> new CustomException(POST_NOT_FOUND));
         User user = userRepository.findById(jwtService.getId())

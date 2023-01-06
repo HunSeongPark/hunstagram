@@ -115,7 +115,7 @@ public class CommentServiceIntegrationTest {
         em.clear();
 
         // when
-        commentService.addComment(requestDto);
+        commentService.createComment(requestDto);
 
         // then
         Comment comment = commentRepository.findAll().get(0);
@@ -132,7 +132,7 @@ public class CommentServiceIntegrationTest {
                 .build();
 
         // when & then
-        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        CustomException e = assertThrows(CustomException.class, () -> commentService.createComment(requestDto));
         assertThat(e.getErrorCode()).isEqualTo(POST_NOT_FOUND);
     }
 
@@ -172,7 +172,7 @@ public class CommentServiceIntegrationTest {
         loginUser(user2);
 
         // when & then
-        CustomException e = assertThrows(CustomException.class, () -> commentService.addComment(requestDto));
+        CustomException e = assertThrows(CustomException.class, () -> commentService.createComment(requestDto));
         assertThat(e.getErrorCode()).isEqualTo(USER_NOT_FOUND);
     }
 
