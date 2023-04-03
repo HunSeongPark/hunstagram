@@ -1,12 +1,11 @@
 # hunstagram
-인스타그램 API 클론코딩 - API 설계부터 배포 자동화까지 📷
+인스타그램 API 클론코딩 - API 설계부터 테스트코드를 통한 유지보수까지 📷
 
 ## Goals
 - (Jacoco) Domain 관련 Controller, Service 단에 대해 테스트 커버리지 100%
   - 도메인 별 Controller, Service 유닛테스트 작성
   - 도메인 별 Service 통합테스트 작성
 - (AWS S3) 이미지 저장 및 조회, 삭제(게시글 삭제 시)
-- (Jenkins, Docker, AWC EC2) Docker 사용 컨테이너 배포 및 CI/CD
 - DTO inner class 처리 등 클린코드에 집중하며 코드 작성
 
 ## ERD
@@ -25,5 +24,3 @@
 
 ## 새롭게 알게된 것
 - [Entity Class에 Lombok @NoArgsConstructor(access=PROTECTED)를 붙이는 이유](https://hungseong.tistory.com/70)
-- Mock S3 라이브러리 사용하여 로컬 환경에서 S3 테스트
-- Multipart 테스트 (Controller Unit Test, Service Integration Test)
